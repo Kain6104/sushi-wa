@@ -19,7 +19,7 @@ import java.util.*;
 public class ChatbotController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatbotController.class);
-    private static final String GEMINI_API_KEY = "AIzaSyDsmFXj4OabrIAiR0VwcXd-jx2mJZKS-Sk"; // API Key của Google Gemini AI
+    private static final String GEMINI_API_KEY = ""; // API Key của Google Gemini AI
 
     @PostMapping
     public ResponseEntity<Map<String, String>> chat(@RequestBody Map<String, String> request) {

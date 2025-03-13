@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Wa</title>
+    <link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">	
+    <!-- Link đến Bootstrap CSS từ CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="index.css" rel="stylesheet">
+	<style>
+		.form-control::placeholder {
+		    font-size: 12px; /* Điều chỉnh kích thước chữ */
+		}
+		
+	</style>
+</head>
+<body>
+
+	<!-- Navbar trên màn hình lớn -->
+	<th:block th:replace="fragments/header :: header"></th:block>
+	<script src="/js/chatbot.js"></script>
+
+	<!-- Form Tìm kiếm -->
+	<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+	    <form action="/search" method="get">
+	        <div class="input-group">
+	            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+	                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+	            </a>
+	            <!-- Input search -->
+	            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+	            <!-- Biểu tượng giỏ hàng với số lượng món -->
+				<a href="/cart" class="input-group-text">
+	                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+	                    <i class="fas fa-shopping-cart"></i>
+	                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+	                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+	                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+	                    </span>
+	                </button>
+	            </a>
+	        </div>
+	    </form>
+	</div>
+	<!-- Navbar cố định dưới cùng cho di động -->
+	<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+	    <div class="container">
+	        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'index')} ? 'active'">
+	                <a class="nav-link" href="/index">
+	                    <i class="fas fa-home"></i><br>Trang chủ
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'menu')} ? 'active'">
+	                <a class="nav-link" href="/menu">
+	                    <i class="fas fa-utensils"></i><br>Đặt Món
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'promotions')} ? 'active'">
+	                <a class="nav-link" href="/promotions">
+	                    <i class="fas fa-tag"></i><br>Khuyến mãi
+	                </a>
+	            </li>
+				<!--
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+	                th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/my_order">
+	                    <i class="fas fa-box"></i><br>Đơn hàng
+	                </a>
+	            </li>
+				!-->
+				<li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+				    th:if="${session.loggedInUser != null}">
+				    <a class="nav-link position-relative" href="/notifications">
+				        <i class="fas fa-bell"></i> <!-- Biểu tượng chuông -->
+				        <span class="position-absolute top-10 start-100 translate-middle badge rounded-pill bg-danger"
+				              th:if="${unreadNotificationsCount > 0}">
+				            <span th:text="${unreadNotificationsCount}">0</span>
+				        </span>
+				        <br>Thông báo
+				    </a> 
+				</li>
+				<li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'customer')} ? 'active'"
+				    th:if="${session.loggedInUser != null}">
+				    <a class="nav-link" href="/customer">
+				        <i class="fas fa-user"></i><br>
+				        <span th:text="${#strings.length(session.loggedInUser) > 5 ? #strings.substring(session.loggedInUser, 0, 5) + '...' : session.loggedInUser}"></span>
+				    </a>
+				</li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'login')} ? 'active'"
+	                th:if="${session.loggedInUser == null}">
+	                <a class="nav-link" href="/login">
+	                    <i class="fas fa-user"></i><br>Đăng nhập
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</nav>
+    <!-- Banner -->
+    <section class="banner show-on-scroll">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1>SUSHI WA XIN CHÀO!</h1>
+                    <p>Giá trị thương hiệu của Sushi Wa là đem hương vị tiệm cận với hương vị truyền thống của Nhật Bản đến với bữa ăn của người Việt.</p>
+					<p>Nó đồng thời chính là một lời cam kết ngầm của Sushi Wa về chất lượng món ăn: luôn tươi ngon và đảm bảo vệ sinh thực phẩm.</p>
+                    <a href="menu" class="btn">Đặt hàng ngay →</a>
+                </div>
+                <div class="col-md-6 banner-image">
+                    <img src="https://yakiyum.vn/wp-content/uploads/2024/07/sushi1.png" alt="Sushi Banner">
+                </div>
+            </div>
+        </div>
+    </section>
+	<section class="banner show-on-scroll">
+	        <div class="container">
+	            <div class="row align-items-center">
+					<div class="col-md-6 banner-image">
+						<img style="border-radius: 10px;" src="https://cdn.vox-cdn.com/thumbor/FrwxdoUvgdphIPQORzXfNTbW4Os=/65x0:1029x723/1200x800/filters:focal(65x0:1029x723)/cdn.vox-cdn.com/uploads/chorus_image/image/51135811/Screen_Shot_2016-09-30_at_4.01.44_PM.0.0.png" alt="Sushi">						    
+	                </div>
+	                <div class="col-md-6">
+	                     <h1>Về chúng tôi</h1>
+	                  	 <p>   Món ăn đến với chúng ta như những người thân yêu, dù đó là sinh vật với đôi cánh bay lượn hay những thực vật cắm rễ sâu vào đất.  
+					 		   Chúng tôi trân quý mỗi món ăn không chỉ vì hương vị và dinh dưỡng, mà còn vì nét văn hóa và ý nghĩa mà nó đại diện.  
+					 		   Mỗi món ăn là một câu chuyện, mang theo dòng chảy lịch sử được lưu truyền qua từng thế hệ.  </p>
+	                </div>
+	               
+	            </div>
+	        </div>
+	    </section>
+
+		<footer class="footer">
+		    <div class="container">
+		        <div class="row">
+		            <div class="col-md-4">
+		                <h5 class="footer-logo">Sushi Wa - Sushi và Lẩu Băng chuyền</h5>
+						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7867190715383!2d106.71906057480564!3d10.827627489324223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175291a441368eb%3A0x7a1dd7b554da4946!2sSushi%20Wa!5e0!3m2!1svi!2s!4v1728326309222!5m2!1svi!2s"  style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+		            </div>
+		            <div class="cuoicung col-md-4">
+		                <h5>Bạn cần hỗ trợ</h5>
+		                <p>
+		                    <strong>Hoteline: 097 480 2998</strong><br>
+
+		                    Địa chỉ:<a class="btn-reservation" href="https://maps.google.com/maps/dir//Sushi+Wa+TTTM+Giga+Mall,+240+%C4%90.+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng+Hi%E1%BB%87p+B%C3%ACnh+Ch%C3%A1nh+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh/@10.8276275,106.7216355,16z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3175291a441368eb:0x7a1dd7b554da4946" target="_blank">Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh</a><br>
+		                    Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+		                </p>
+		                <div class="social-icons">
+		                    <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook">
+		                        <i class="fab fa-facebook-f"></i>
+		                    </a>
+		                    <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+		                        <i class="fab fa-twitter"></i>
+		                    </a>
+		                    <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+		                        <i class="fab fa-youtube"></i>
+		                    </a>
+		                    <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+		                        <i class="fab fa-instagram"></i>
+		                    </a>
+		                </div>
+		                <div class="payment-icons mt-3">
+		                    <a href="https://visa.com" target="_blank" aria-label="Visa">
+		                        <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+		                    </a>
+		                    <a href="https://www.mastercard.com" target="_blank" aria-label="Mastercard">
+		                        <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+		                    </a>
+		                    <a href="https://www.stripe.com" target="_blank" aria-label="Stripe">
+		                        <img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe">
+		                    </a>
+		                    <a href="https://www.paypal.com" target="_blank" aria-label="Paypal">
+		                        <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal">
+		                    </a>
+		                </div>
+		            </div>
+		            <div class="col-md-2">
+		                <h5>Hướng dẫn</h5>
+		                <ul class="list-unstyled">
+		                    <li><a href="/promotion/58d05722-ab2a-4744-a3f5-b19bdc41fc9f">Cách đặt món</a></li>
+		                    <li><a href="#">Phương thức thanh toán</a></li>
+		                    <li><a href="#">Giao hàng tận nơi</a></li>
+		                    <li><a href="#">Chính sách đổi trả</a></li>
+		                    <li><a href="#">Câu hỏi thường gặp</a></li>
+		                </ul>
+		            </div>
+		            <div class="col-md-2">
+		                <h5>Hỗ trợ khách hàng</h5>
+		                <ul class="list-unstyled">
+		                    <li><a href="#">Liên hệ chúng tôi</a></li>
+		                    <li><a href="#">Tư vấn thực đơn</a></li>
+		                    <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+		                    <li><a href="#">Chính sách bảo mật</a></li>
+		                    <li><a href="#">Điều khoản sử dụng</a></li>
+		                </ul>
+		            </div>
+					<div class="cuoicung col-12 mt-3 mb-3 text-center text-secondary">
+						<i>
+						Bản quyền thuộc &copy;<script>document.write(new Date().getFullYear());</script> Sushi Wa.</i>
+					</div>
+		        </div>
+		    </div>
+		</footer>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript để thêm hiệu ứng khi cuộn -->
+    <script>
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+
+        document.addEventListener('scroll', function() {
+            document.querySelectorAll('.show-on-scroll').forEach(function(element) {
+                if (isInViewport(element)) {
+                    element.classList.add('show-on-scroll');
+                }
+            });
+        });
+		document.addEventListener('DOMContentLoaded', function () {
+		      // Get the button and input elements
+		      const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+		      const voiceInput = document.getElementById('voiceInput');
+		      const searchForm = document.getElementById('voiceSearchForm'); // Lấy form tìm kiếm
+
+		      // Web Speech API setup
+		      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		      const recognition = new SpeechRecognition();
+
+		      // Configure the recognition settings
+		      recognition.lang = 'vi-VN'; // Đặt ngôn ngữ tiếng Việt nếu cần thiết
+		      recognition.interimResults = true; // Cho phép hiển thị kết quả tạm thời
+		      recognition.maxAlternatives = 1;
+
+		      // Ghi âm khi nhấn nút
+		      voiceSearchBtn.addEventListener('click', function () {
+		          voiceInput.value = ''; // Xóa giá trị hiện tại trong input
+		          recognition.start(); // Bắt đầu nhận diện giọng nói
+		      });
+
+		      // Xử lý kết quả nhận diện giọng nói
+		      recognition.onresult = function (event) {
+		          // Lấy kết quả giọng nói
+		          const result = event.results[0][0].transcript;
+
+		          // Gán kết quả vào ô input
+		          voiceInput.value = result;
+
+		          // Nếu kết quả đã hoàn thành, có thể tự động gửi form (nếu cần)
+		          if (event.results[0].isFinal) {
+		              searchForm.submit(); // Gửi form tìm kiếm
+		          }
+		      };
+
+		      // Xử lý khi kết thúc ghi âm hoặc lỗi
+		      recognition.onerror = function (event) {
+		          console.error('Error:', event.error);
+		      };
+
+		      recognition.onend = function () {
+		          console.log('Recognition ended.');
+		      };
+		  });
+ 	 document.addEventListener('DOMContentLoaded', function () {
+	      // Get the button and input elements
+	      const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+	      const voiceInput = document.getElementById('voiceInput');
+	      const searchForm = document.getElementById('voiceSearchForm'); // Lấy form tìm kiếm
+
+	      // Web Speech API setup
+	      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+	      const recognition = new SpeechRecognition();
+
+	      // Configure the recognition settings
+	      recognition.lang = 'vi-VN'; // Đặt ngôn ngữ tiếng Việt nếu cần thiết
+	      recognition.interimResults = true; // Cho phép hiển thị kết quả tạm thời
+	      recognition.maxAlternatives = 1;
+
+	      // Ghi âm khi nhấn nút
+	      voiceSearchBtn.addEventListener('click', function () {
+	          voiceInput.value = ''; // Xóa giá trị hiện tại trong input
+	          recognition.start(); // Bắt đầu nhận diện giọng nói
+	      });
+
+	      // Xử lý kết quả nhận diện giọng nói
+	      recognition.onresult = function (event) {
+	          // Lấy kết quả giọng nói
+	          const result = event.results[0][0].transcript;
+
+	          // Gán kết quả vào ô input
+	          voiceInput.value = result;
+
+	          // Nếu kết quả đã hoàn thành, có thể tự động gửi form (nếu cần)
+	          if (event.results[0].isFinal) {
+	              searchForm.submit(); // Gửi form tìm kiếm
+	          }
+	      };
+
+	      // Xử lý khi kết thúc ghi âm hoặc lỗi
+	      recognition.onerror = function (event) {
+	          console.error('Error:', event.error);
+	      };
+
+	      recognition.onend = function () {
+	          console.log('Recognition ended.');
+	      };
+	  });
+	  document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+
+	  document.getElementById('dropzone').addEventListener('dragover', function (event) {
+	      event.preventDefault();
+	      event.stopPropagation();
+	      this.style.borderColor = 'green';
+	  });
+
+	  document.getElementById('dropzone').addEventListener('dragleave', function (event) {
+	      event.preventDefault();
+	      event.stopPropagation();
+	      this.style.borderColor = '#ccc';
+	  });
+
+	  document.getElementById('dropzone').addEventListener('drop', function (event) {
+	      event.preventDefault();
+	      event.stopPropagation();
+	      this.style.borderColor = '#ccc';
+	      
+	      // Lấy file từ sự kiện drag và drop
+	      const file = event.dataTransfer.files[0];
+	      handleImageUpload({ target: { files: [file] } });
+	  });
+
+	  // Hàm xử lý tải ảnh
+	  function handleImageUpload(event) {
+	      const file = event.target.files[0];
+	      if (file) {
+	          // Hiển thị ảnh preview
+	          const reader = new FileReader();
+	          reader.onload = function (e) {
+	              const imagePreview = document.getElementById('imagePreview');
+	              imagePreview.src = e.target.result;
+	              imagePreview.style.display = 'block';
+	          };
+	          reader.readAsDataURL(file);
+	          
+	          // Gửi ảnh đến server (ví dụ dùng Fetch API hoặc Ajax)
+	          sendImageForSearch(file);
+	      }
+	  }
+
+	  // Gửi ảnh lên server để nhận dạng và tìm kiếm
+	  function sendImageForSearch(imageFile) {
+	      const formData = new FormData();
+	      formData.append('image', imageFile);
+
+	      // Gửi tới API hoặc server của bạn
+	      fetch('/search-image', {
+	          method: 'POST',
+	          body: formData
+	      })
+	      .then(response => response.json())
+	      .then(data => {
+	          // Xử lý kết quả nhận dạng hình ảnh
+	          console.log('Kết quả tìm kiếm:', data);
+	          document.getElementById('query').value = data.searchQuery || '';  // Cập nhật query tìm kiếm
+	      })
+	      .catch(error => {
+	          console.error('Lỗi:', error);
+	      });
+	  }
+
+    </script>
+</body>
+</html>

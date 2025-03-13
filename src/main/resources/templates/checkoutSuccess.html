@@ -1,0 +1,220 @@
+	<!DOCTYPE html>
+	<html lang="vi">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title th:text="'Hóa đơn '+${orderCode}">Hóa Đơn</title>
+		<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">	
+	    <!-- Link đến Bootstrap CSS từ CDN -->
+	    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	    <!-- Google Fonts -->
+	    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	    <!-- Custom CSS -->
+		 <!-- Thêm Font Awesome CDN -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+		<link href="/index.css" rel="stylesheet">
+	    <style>
+			body{
+				width: 100%;
+
+			}
+	        .invoice-container {
+	            max-width: 800px;
+	            margin: 30px auto;
+	            background: #fff;
+	            border-radius: 10px;
+	            padding: 20px;
+	            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	        }
+	        .header {
+	            display: flex;
+	            justify-content: space-between;
+	            align-items: center;
+	        }
+	        .header h1 {
+	            font-size: 24px;
+	            color: #d32f2f;
+	            margin: 0;
+	        }
+	        .header .logo {
+	            font-size: 20px;
+	            color: #d32f2f;
+	        }
+	        .info {
+	            margin-top: 20px;
+	        }
+	        .info p {
+	            margin: 5px 0;
+	            font-size: 14px;
+	        }
+	        .table {
+	            width: 100%;
+	            margin-top: 20px;
+	            border-collapse: collapse;
+	        }
+	        .table th, .table td {
+	            border: 1px solid #ddd;
+	            padding: 10px;
+	            text-align: left;
+	        }
+	        .table th {
+	            background-color: #f4f4f4;
+	        }
+	        .footer {
+	            margin-top: 20px;
+	            font-size: 14px;
+	            color: #555;
+	        }
+			.total {
+			    text-align: right;
+			    margin-top: 30px;
+			    font-size: 18px;
+			    color: #333;
+			    background-color: #f5f5f5;
+			    padding: 20px;
+			    border-radius: 8px;
+			    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			}
+	
+			.total p {
+			    margin: 10px 0;
+			}
+	
+			.total strong {
+			    font-weight: bold;
+			    color: #d32f2f;
+			}
+	
+			.total .highlight {
+			    color: #1976d2; /* Màu sắc cho các giá trị nổi bật */
+			    font-size: 20px;
+			}
+			/* Media Query cho thiết bị di động */
+			@media (max-width: 768px) {
+			    .table {
+			        width: 100%;
+			        overflow-x: auto; /* Cho phép thanh cuộn ngang khi nội dung vượt quá chiều rộng */
+			        -webkit-overflow-scrolling: touch; /* Tăng khả năng cuộn mượt trên thiết bị di động */
+			        padding: 10px;
+			        font-size: 0.85rem; /* Giảm cỡ chữ */
+			        display: block; /* Hiển thị bảng như block để cuộn ngang */
+			    }
+
+			    th, td {
+			        padding: 8px; /* Giảm khoảng cách padding */
+			    }
+
+			    td img {
+			        width: 80px; /* Giảm kích thước hình ảnh */
+			    }
+
+			    tfoot td {
+			        font-size: 14px; /* Điều chỉnh kích thước font cho tổng giá trị */
+			    }
+			}
+	    </style>
+	</head>
+	<body>
+		<th:block th:replace="fragments/header :: header"></th:block>
+	
+	    <div class="invoice-container">
+	        <div class="header">
+	            <h1>#[[${orderCode}]]</h1>
+				<div class="logo">
+				        <img width="50px" src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo" />
+				</div>
+	        </div>
+			<center><h2 class="fw-bold">HÓA ĐƠN THANH TOÁN</h2> 
+			<i> <small>Nhân viên sẽ liên hệ đến quý khách trong vòng 15 phút để xác nhận lại đơn hàng!</small> </i></center>
+
+	        <div class="info">
+	            <p><strong>Khách hàng:</strong> [[${customerName}]]</p>
+	            <p><strong>Số điện thoại:</strong> [[${customerPhone}]]</p>
+	            <p><strong>Địa chỉ:</strong> [[${customerAddress}]]</p>
+				<p><strong>Ngày đặt hàng:</strong> [[${#temporals.format(orderDate, ' HH:mm:ss dd/MM/yyyy')}]]</p>
+			</div>
+			<table class="table">
+			    <thead>
+			        <tr>
+			            <th>Hình ảnh</th>
+			            <th>Tên món ăn</th>
+			            <th>Số lượng</th>
+			            <th>Đơn giá</th>
+			            <th>Thành tiền</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr th:each="item : ${orderedItems}">
+			            <td><img th:src="${item.imageUrl}" alt="Image" width="100"></td> <!-- Hiển thị hình ảnh món ăn -->
+			            <td th:text="${item.name}"></td> <!-- Hiển thị tên món ăn -->
+			            <td th:text="${item.quantity}"></td> <!-- Hiển thị số lượng -->
+			            <td th:text="${item.price}"></td> <!-- Hiển thị đơn giá -->
+			            <td th:text="${item.price * item.quantity}"></td> <!-- Hiển thị thành tiền -->
+			        </tr>
+			    </tbody>
+			    <tfoot>
+			        <tr>
+			            <td colspan="4" style="text-align: right;"><strong>Tổng giá trị các món ăn:</strong></td>
+						<td th:text="${#numbers.formatInteger(totalPrice, 0, 'POINT')+' đ'}"></td>
+			        </tr>
+			    </tfoot>
+			</table>
+	        <div class="total">
+				<p><strong>Điểm sử dụng:</strong> [[${pointsUsed}]]</p>
+				<p><strong>Quy đổi điểm:</strong> <span th:text="${#numbers.formatInteger(pointsUsed*500, 0, 'POINT')}"></span>₫</p>
+				<p><strong>Voucher sử dụng:</strong> [[${voucherUsed}]]</p>
+				<p><strong>Giá trị voucher:</strong> <span th:text="${#numbers.formatInteger(voucherValue, 0, 'POINT')}"></span>₫</p>
+	            <p><strong>Tổng tiền thanh toán:</strong> <span th:text="${#numbers.formatInteger(totalPayable, 0, 'POINT')}"></span>₫</p>
+	        </div>
+			<center class="mt-3">
+			    <a th:href="'/my_order?modal=orderDetailsModal_' + ${orderCode}">Xem chi tiết đơn hàng</a>
+			</center>
+
+	        <div class="footer">
+	            <p><strong>Thông tin thanh toán:</strong></p>
+				<i class="text-danger"> <small>Vui lòng bỏ qua nếu quý khách đã thanh toán ở bước trước!</small> </i>
+				<img id="momoQrImage"
+			     th:src="@{'https://img.vietqr.io/image/VCB-1019224767-compact2.png?amount=' + ${#numbers.formatInteger(totalPayable, 0)} + '&addInfo=' + ${orderCode} + '&accountName=Huynh%20Thanh%20Phat'}"
+			     alt="Mã QR MoMo"
+			     class="img-fluid"
+			     style="max-width: 50%;">
+				 <p><strong>Tổng tiền thanh toán:</strong> <span th:text="${#numbers.formatInteger(totalPayable, 0, 'POINT')}"></span>₫</p>
+	            <p>Ngân hàng: Vietcombank</p>
+	            <p>Tên tài khoản: Huỳnh Thành Phát</p>
+	            <p>Số tài khoản: 1019224767</p>
+				<p>Hạn thanh toán: <span id="countdown"></span></p>
+
+				<script type="text/javascript">
+				    // Cài đặt thời gian hết hạn là 30 phút từ thời điểm hiện tại
+				    var paymentDeadline = new Date().getTime() + 30 * 60 * 1000; // 30 phút tính bằng milliseconds
+
+				    // Hàm cập nhật đếm ngược
+				    function updateCountdown() {
+				        var now = new Date().getTime();  // Thời gian hiện tại
+				        var timeLeft = paymentDeadline - now;  // Tính toán thời gian còn lại
+
+				        if (timeLeft <= 0) {
+				            document.getElementById("countdown").innerHTML = "Hạn thanh toán đã hết!";
+				            clearInterval(countdownInterval);  // Dừng đếm ngược khi hết thời gian
+				        } else {
+				            var minutes = Math.floor(timeLeft / (1000 * 60));  // Tính số phút còn lại
+				            var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);  // Tính số giây còn lại
+
+				            document.getElementById("countdown").innerHTML = minutes + " phút " + seconds + " giây";
+				        }
+				    }
+
+				    // Cập nhật đếm ngược mỗi giây
+				    var countdownInterval = setInterval(updateCountdown, 1000);
+				</script>
+	        </div>
+	    </div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	</body>
+	</html>

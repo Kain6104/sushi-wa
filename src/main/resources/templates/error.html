@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi truy cập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="/src/main/resources/static/index.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+	<style>
+		body {
+		      font-family: 'Noto Sans JP', sans-serif;
+		      background-color: #fdf5f3;
+		  }
+		  .navbar-brand img {
+		      height: 50px; /* Đặt chiều cao cho logo */
+		      margin-right: 10px; /* Khoảng cách giữa logo và tên thương hiệu */
+		  }
+		  .navbar-nav .nav-link {
+		      color: #333;
+		  }
+		  .navbar-nav .nav-link:hover {
+		      color: #ff7f50;
+		  }
+        
+        
+        .error {
+            font-size: 28px;
+            color: #ff4e3f;
+            font-weight: bold;
+            margin-top: 150px;
+        }
+        .contact-icons {
+            margin-top: 20px;
+        }
+        .contact-icons a {
+            margin: 0 15px;
+            text-decoration: none;
+        }
+        .contact-icons img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .contact-icons img:hover {
+            transform: scale(1.1);
+        }
+        .btn-back {
+            margin-top: 30px;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+        .btn-back:hover {
+            background-color: #2874a6;
+            color: #fff;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            margin-top: 50px;
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+        }
+		body {
+		     font-family: 'Poppins', sans-serif;
+		     background-color: #fdf5f3;
+			 margin-top: 80px;
+		 }
+		 .navbar-brand img {
+		     height: 50px;
+		     margin-right: 10px;
+		 }
+		 .navbar-nav .nav-link {
+		     color: #333;
+		 }
+		 .navbar-nav .nav-link:hover {
+		     color: #ff7f50;
+		 }
+		 .banner {
+		     background-color: #fff3ed;
+		     padding: 100px 0;
+		     display: flex;
+		     align-items: center;
+		     opacity: 0;
+		     transform: translateY(50px);
+		     transition: opacity 1s ease, transform 1s ease;
+		 }
+		 .show-on-scroll {
+		     opacity: 1 !important;
+		     transform: translateY(0) !important;
+		 }
+		 .banner h1 {
+		     font-size: 3rem;
+		     font-weight: bold;
+		     color: #333;
+		 }
+		 .banner p {
+		     color: #666;
+		     font-size: 1.1rem;
+		     margin-top: 10px;
+		 }
+		 .banner .btn {
+		     background-color: #ff7f50;
+		     color: #fff;
+		     margin-top: 20px;
+		     padding: 10px 30px;
+		     border-radius: 25px;
+		 }
+		 .banner .btn:hover {
+		     background-color: #ff6347;
+		 }
+		 .banner-image img {
+		     max-width: 100%;
+		 }
+		 .footer {
+		    background-color: #f8f9fa; /* Màu nền nhạt */
+		    color: #111; /* Chỉnh màu chữ để phù hợp với nền sáng */
+		    padding: 40px 0;
+		    width: 100%;
+		}
+
+		.footer a {
+		    color: #111; /* Màu chữ phù hợp với nền mới */
+		    text-decoration: none;
+		}
+
+		.footer a:hover {
+		    color: #ff6600; /* Màu khi hover */
+		}
+
+		.footer-logo {
+		    font-size: 1.5rem;
+		    font-weight: bold;
+		    color: #ff6600;
+		}
+
+		.footer .social-icons i {
+		    font-size: 1.5rem;
+		    margin-right: 15px;
+		    color: #111;
+		}
+
+		.footer .payment-icons img {
+		    height: 30px;
+		    margin-right: 10px;
+		}    
+		@media screen and (max-width: 768px) {
+		    .error {
+		        font-size: 16px; /* Nhỏ hơn so với desktop */
+		        margin-top: 100px; /* Điều chỉnh khoảng cách nếu cần */
+		    }
+		}
+    </style>
+</head>
+<body>
+	<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="http://localhost:8080/">
+                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi"> 
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/menu">Đặt món</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/promotions">Khuyến mãi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_order">Đơn hàng</a></li>
+					<li class="nav-item"><a class="nav-link" href="/profile">Khách hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+					<li class="nav-item" th:if="${session.role == 'admin'}">
+					    <a class="nav-link" href="/admin">Trang Admin</a>
+					</li>
+					<li class="nav-item" th:if="${session.loggedInUser == null}">
+					    <a class="nav-link" href="/login">Đăng nhập</a>
+					</li>
+					<li class="nav-item dropdown" th:if="${session.loggedInUser != null}">
+					    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					        [[${session.loggedInUser}]]
+					    </a>
+					    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+					        <a class="dropdown-item" href="/logout"> <i class="fa fa-sign-out" aria-hidden="true"> </i> Đăng xuất</a>
+					    </div>
+					</li>
+
+                </ul>
+                <!-- Biểu tượng giỏ hàng -->
+				<a href="/cart">
+	                <div class="nav-item" title="Giỏ hàng">
+	                    <button class="btn btn-outline-primary position-relative">
+	                        <i class="fas fa-shopping-cart"></i>
+	                    </button>
+	                </div>
+				</a>
+            </div>
+        </div>
+    </nav>
+
+	<center>
+    <!-- Error Message -->
+	
+	<!-- Hiển thị thông báo xác thực email thành công -->
+			 
+    <div class="error">
+		<p th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger mt-3"></p>
+		<!-- Kiểm tra nếu error là "Not Found" -->
+		<div>
+		    <p class="text-danger" th:if="${error == 'Not Found'}">
+				<img src="https://res.cloudinary.com/codefusiontech/image/upload/v1582791158/general/404Hero.png" style="width: 30%;"> 
+		    </p>
+		</div>
+		<!-- Hiển thị lỗi khác, nhưng ẩn nếu lỗi là "Not Found" -->
+		<p th:if="${error != null and error != 'Not Found' and error != 'None'}" 
+		   th:text="${error}" 
+		   class="text-danger mt-3">
+		</p>
+		<div th:if="${error == 'Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.'}">
+			    <p class="text-danger">
+			        Tự động đăng xuất sau
+			        <span id="countdown">15</span> giây...
+			    </p>
+			    <script>
+			        const logoutUrl = '/logout'; // URL để chuyển hướng
+			        const countdownDuration = 15; // Thời gian đếm ngược ban đầu (giây)
+
+			        // Lấy thời gian hiện tại và lưu trạng thái đếm ngược
+			        const now = new Date().getTime();
+			        let endTime = localStorage.getItem('logoutEndTime'); // Lấy thời gian kết thúc từ localStorage
+
+			        if (!endTime || now > endTime) {
+			            // Nếu không có giá trị hoặc thời gian đã hết, thiết lập lại
+			            endTime = now + countdownDuration * 1000; // Thời gian kết thúc mới
+			            localStorage.setItem('logoutEndTime', endTime);
+			        }
+
+			        const countdownElement = document.getElementById('countdown');
+
+			        // Hàm cập nhật đếm ngược
+			        function updateCountdown() {
+			            const currentTime = new Date().getTime(); // Thời gian hiện tại
+			            const remainingTime = Math.ceil((endTime - currentTime) / 1000); // Tính thời gian còn lại
+
+			            if (remainingTime > 0) {
+			                countdownElement.textContent = remainingTime; // Cập nhật đếm ngược
+			            } else {
+			                clearInterval(interval); // Dừng đếm ngược
+			                localStorage.removeItem('logoutEndTime'); // Xóa trạng thái
+			                window.location.href = logoutUrl; // Chuyển hướng
+			            }
+			        }
+
+			        // Cập nhật mỗi giây
+			        const interval = setInterval(updateCountdown, 1000);
+
+			        // Gọi hàm cập nhật ngay khi trang được tải
+			        updateCountdown();
+			    </script>
+			</div>
+
+		<!--<p> <div class="html-div xdj266r x11i5rnm x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd xieb3on"><svg viewBox="0 0 112 112" width="112" height="112" class="xfx01vb x1lliihq x1tzjh5l x1k90msu x2h7rmj x1qfuztq" style="--color: var(--primary-icon);"><defs><clipPath id="a"><path fill="none" d="M100.31 101.1H39.45V12.8h40.78l20.08 21.03v67.27z"></path></clipPath></defs><path d="M38.54 39.69h1.82a11.78 11.78 0 0 1 11.78 11.78v13.6H26.77v-13.6a11.78 11.78 0 0 1 11.77-11.78z" stroke-miterlimit="10" stroke-width="9.48" stroke="#bcc0c4" fill="none"></path><g clip-path="url(#a)"><path fill="#90c3ff" d="M100.31 101.1H39.45V12.8h40.78l20.08 21.03v67.27z"></path><path d="M80.28 10.59h23.26v23.26H87.32a7 7 0 0 1-7-7V10.59h-.04z" fill="#1876f2"></path><path d="M38.54 39.69h1.82a11.78 11.78 0 0 1 11.78 11.78v13.6H26.77v-13.6a11.78 11.78 0 0 1 11.77-11.78z" stroke="#fff" stroke-miterlimit="10" stroke-width="9.48" fill="none"></path></g><rect x="10.54" y="58.29" width="57.83" height="42.76" rx="4.41" fill="#7a7d81"></rect><circle cx="39.45" cy="75.25" r="6.3"></circle><path d="M36.62 73.73h5.67v12.48a2.63 2.63 0 0 1-2.63 2.63h-.41a2.63 2.63 0 0 1-2.63-2.63V73.73z"></path></svg></div>
+			</p> -->	
+
+	</div>
+    <p>Liên hệ để được hỗ trợ:</p>
+    <div class="contact-icons">
+        <a href="https://www.facebook.com/htphat.04" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+        </a>
+        <a href="https://zalo.me/0832060104" target="_blank">
+            <img src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png" alt="Zalo">
+        </a>
+    </div>
+	<!-- Hiển thị nút "Quay lại trang chủ" hoặc "Đăng nhập lại" dựa trên errorMessage -->
+	<a href="/index" class="btn btn-back" th:if="${error != 'Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.'}">  <i class="fas fa-home"> </i> Quay lại trang chủ</a>
+	<!-- Kiểm tra điều kiện error -->
+	<!-- Nút "Đăng nhập lại" vẫn hiển thị trong trường hợp người dùng muốn nhấn ngay -->
+	<a class="btn btn-back" href="/logout" th:if="${error == 'Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.'}">
+	    <i class="fa fa-sign-out" aria-hidden="true"></i> Đăng nhập lại
+	</a>
+	</center>
+    <!-- Footer -->
+	<footer class="footer" >
+		       <div class="container">
+		           <div class="row">
+		               <div class="col-md-4">
+		                   <h5 class="footer-logo">Sushi Wa</h5>
+		                   <p>Sushi và Lẩu Băng chuyền tại Tầng B1 GigaMall Tp.Thủ Đức</p>
+		               </div>
+		               <div class="col-md-4">
+		                   <h5>Bạn cần hỗ trợ</h5>
+		                   <p>
+		                       <strong>Hoteline: 097 480 2998</strong><br>
+		                       Địa chỉ: Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh<br>
+		                       Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+		                   </p>
+						   <div class="social-icons">
+						       <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook">
+						           <i class="fab fa-facebook-f"></i>
+						       </a>
+						       <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+						           <i class="fab fa-twitter"></i>
+						       </a>
+						       <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+						           <i class="fab fa-youtube"></i>
+						       </a>
+						       <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+						           <i class="fab fa-instagram"></i>
+						       </a>
+						   </div>
+						   <div class="payment-icons mt-3">
+						       <a href="https://visa.com" target="_blank" aria-label="Stripe">
+						           <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+						       </a>
+						       <a href="https://www.mastercard.com" target="_blank" aria-label="mastercard">
+						           <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+						       </a>
+						       <a href="https://www.stripe.com" target="_blank" aria-label="Visa">
+						           <img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe">
+						       </a>
+						       <a href="https://www.paypal.com" target="_blank" aria-label="MasterCard">
+						           <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal">
+						       </a>
+						   </div>
+		               </div>
+		               <div class="col-md-2">
+		                   <h5>Hướng dẫn</h5>
+		                   <ul class="list-unstyled">
+		                       <li><a href="#">Cách đặt món</a></li>
+		                       <li><a href="#">Phương thức thanh toán</a></li>
+		                       <li><a href="#">Giao hàng tận nơi</a></li>
+		                       <li><a href="#">Chính sách đổi trả</a></li>
+		                       <li><a href="#">Câu hỏi thường gặp</a></li>
+		                   </ul>
+		               </div>
+		               <div class="col-md-2">
+		                   <h5>Hỗ trợ khách hàng</h5>
+		                   <ul class="list-unstyled">
+		                       <li><a href="#">Liên hệ chúng tôi</a></li>
+		                       <li><a href="#">Tư vấn thực đơn</a></li>
+		                       <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+		                       <li><a href="#">Chính sách bảo mật</a></li>
+		                       <li><a href="#">Điều khoản sử dụng</a></li>
+		                   </ul>
+		               </div>
+		               
+		           </div>
+		         
+		       </div>
+		</footer>
+		<script th:inline="javascript">
+		    /*<![CDATA[*/
+		    var error = /*[[${error}]]*/ null;
+		    var errorMessage = /*[[${errorMessage}]]*/ null;
+		    
+		    if ((!error || error === "None") && (!errorMessage || errorMessage.trim() === "")) {
+		        window.location.href = "/index"; // Chuyển hướng về trang chủ nếu không có lỗi
+		    }
+		    /*]]>*/
+		</script>
+
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+			<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+			<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script></body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tạo Voucher</title>
+    <!-- Liên kết Bootstrap từ CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        /* CSS tùy chỉnh */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        button.btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+	<div class="container">
+	    <h2>Tạo Voucher Mới</h2>
+
+	    <!-- Thông báo lỗi -->
+	    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+	        <p th:text="${errorMessage}"></p>
+	    </div>
+
+	    <!-- Thông báo thành công -->
+	    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+	        <p th:text="${successMessage}"></p>
+	    </div>
+
+	    <form action="#" th:action="@{/admin/vouchers/create}" th:object="${voucher}" method="post">
+	        
+	        <div class="form-group">
+	            <label for="code">Mã Voucher:</label>
+	            <input type="text" id="code" th:field="*{code}" class="form-control" placeholder="Nhập mã voucher" required>
+	        </div>
+
+	       
+			<div class="form-group">
+			    <label for="minOrderAmount">Đơn hàng tối thiểu để áp dụng (VNĐ):</label>
+			    <input type="number" id="minOrderAmount" th:field="*{minOrderAmount}" class="form-control" required>
+			</div>
+
+			<div class="form-group">
+			    <label>Loại giảm giá:</label>
+			    <select id="discountType" th:field="*{discountType}" class="form-control" onchange="toggleMaxDiscount()">
+			        <option value="AMOUNT">Giảm theo số tiền (VNĐ)</option>
+			        <option value="PERCENT">Giảm theo %</option>
+			    </select>
+			</div>
+
+			<div class="form-group">
+			    <label for="discountAmount">Mức giảm giá:</label>
+			    <input type="number" id="discountAmount" th:field="*{discountAmount}" class="form-control" required>
+			</div>
+
+			<div class="form-group" id="maxDiscountField" style="display: none;">
+			    <label for="maxDiscount">Giảm tối đa (VNĐ, nếu giảm theo %):</label>
+			    <input type="number" id="maxDiscount" th:field="*{maxDiscount}" class="form-control">
+			</div>
+
+			<script>
+			    function toggleMaxDiscount() {
+			        let discountType = document.getElementById("discountType").value;
+			        let maxDiscountField = document.getElementById("maxDiscountField");
+			        maxDiscountField.style.display = (discountType === "PERCENT") ? "block" : "none";
+			    }
+			    window.onload = toggleMaxDiscount;
+			</script>
+
+
+	        <div class="form-group">
+	            <label for="maxUsage">Số lần sử dụng tối đa:</label>
+	            <input type="number" id="maxUsage" th:field="*{maxUsage}" class="form-control" placeholder="Nhập số lần sử dụng tối đa" required>
+	        </div>
+
+	        <div class="form-group">
+	            <label for="maxUsagePerUser">Số lần sử dụng tối đa mỗi người:</label>
+	            <input type="number" id="maxUsagePerUser" th:field="*{maxUsagePerUser}" class="form-control" placeholder="Nhập số lần sử dụng tối đa cho mỗi người" required>
+	        </div>
+
+			<div class="form-group">
+			    <label for="startDate">Ngày giờ bắt đầu:</label>
+			    <input type="datetime-local" id="startDate" th:field="*{startDate}" class="form-control" required>
+			</div>
+
+			<div class="form-group">
+			    <label for="endDate">Ngày giờ kết thúc:</label>
+			    <input type="datetime-local" id="endDate" th:field="*{endDate}" class="form-control" required>
+			</div>
+
+	        <!-- Chọn loại áp dụng -->
+	        <div class="form-group">
+	            <label>Áp dụng cho:</label>
+	            <div class="form-check">
+	                <input class="form-check-input" type="checkbox" id="applicableToAll" th:field="*{applicableToAll}" onchange="toggleFoodSelection()">
+	                <label class="form-check-label" for="applicableToAll">Tất cả món ăn</label>
+	            </div>
+	        </div>
+
+			<!-- Chọn món ăn áp dụng voucher -->
+			<div class="form-group">
+			    <label><strong>Chọn món ăn áp dụng voucher:</strong></label>
+			    <div class="border p-3 rounded bg-white">
+			        <div class="row">
+			            <!-- Duyệt danh sách món ăn -->
+			            <div th:each="menuItem : ${foodItems}" class="col-md-4 col-sm-6 mb-3">
+			                <div class="form-check d-flex align-items-center">
+			                    <input type="checkbox" name="menuItemIds" th:value="${menuItem.itemId}" 
+			                           class="form-check-input menu-item-checkbox" 
+			                           th:attr="data-price=${menuItem.price}" 
+			                           id="menuItem-${menuItem.itemId}">
+			                    <label th:for="'menuItem-' + ${menuItem.itemId}" class="form-check-label flex-grow-1 ml-2">
+			                        <span th:text="${menuItem.name}"></span>
+			                        <small class="text-muted d-block">(Giá: <span th:text="${menuItem.price}"></span> VND)</small>
+			                    </label>
+			                    <img th:src="${menuItem.imageUrl}" alt="Hình ảnh món ăn" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
+			<style>
+			    #usageCondition {
+			        width: 100%; /* Chiều rộng 100% */
+			        min-height: 500px; /* Đảm bảo textarea không quá nhỏ */
+			        height: auto; /* Tự động mở rộng theo nội dung */
+			        overflow-y: hidden; /* Ẩn thanh cuộn dọc khi không cần thiết */
+			    }
+			</style>
+
+			<div class="form-group">
+			    <label for="usageCondition">Điều kiện sử dụng:</label>
+			    <textarea id="usageCondition" th:field="*{usageCondition}" class="form-control" placeholder="Nhập điều kiện sử dụng"></textarea>
+			</div>
+
+			<script>
+			    document.addEventListener("DOMContentLoaded", function () {
+			        const textarea = document.getElementById("usageCondition");
+
+			        function autoResize() {
+			            textarea.style.height = "auto"; // Reset height để tính lại kích thước đúng
+			            textarea.style.height = textarea.scrollHeight + "px"; // Thiết lập chiều cao theo nội dung
+			        }
+
+			        textarea.addEventListener("input", autoResize);
+			        autoResize(); // Gọi ngay khi trang load để textarea mở rộng đúng với nội dung ban đầu
+			    });
+			</script>
+
+
+	        <button type="submit" class="btn btn-primary">Tạo Voucher</button>
+	    </form>
+	</div>
+
+	<script>
+	    function toggleFoodSelection() {
+	        let checkbox = document.getElementById("applicableToAll");
+	        let foodSelection = document.getElementById("foodSelection");
+	        foodSelection.style.display = checkbox.checked ? "none" : "block";
+	    }
+	    window.onload = toggleFoodSelection;
+	</script>
+	<script>
+	    function generateUsageCondition() {
+	        const minOrderAmount = document.getElementById("minOrderAmount").value;
+	        const discountType = document.getElementById("discountType").value;
+	        const discountAmount = document.getElementById("discountAmount").value;
+	        const maxDiscount = document.getElementById("maxDiscount").value;
+	        const maxUsage = document.getElementById("maxUsage").value;
+	        const maxUsagePerUser = document.getElementById("maxUsagePerUser").value;
+	        const startDate = document.getElementById("startDate").value;
+	        const endDate = document.getElementById("endDate").value;
+	        const applicableToAll = document.getElementById("applicableToAll").checked;
+
+	        // Lấy danh sách các món ăn được áp dụng
+	        const selectedFoodItems = Array.from(document.querySelectorAll(".menu-item-checkbox:checked"))
+	            .map(item => item.nextElementSibling.innerText.trim());
+
+	        let condition = `Điều kiện áp dụng voucher:\n`;
+	        condition += `- Áp dụng cho đơn hàng từ ${minOrderAmount} VNĐ trở lên.\n`;
+
+	        if (discountType === "PERCENT") {
+	            condition += `- Giảm ${discountAmount}% trên tổng giá trị đơn hàng`;
+	            if (maxDiscount) {
+	                condition += ` (tối đa ${maxDiscount} VNĐ).`;
+	            }
+	            condition += `\n`;
+	        } else {
+	            condition += `- Giảm trực tiếp ${discountAmount} VNĐ trên tổng giá trị đơn hàng.\n`;
+	        }
+
+	        condition += `- Mỗi voucher có thể được sử dụng tối đa ${maxUsage} lần.\n`;
+	        condition += `- Mỗi khách hàng được sử dụng tối đa ${maxUsagePerUser} lần.\n`;
+	        condition += `- Thời gian áp dụng: từ ${startDate} đến ${endDate}.\n`;
+
+	        if (applicableToAll) {
+	            condition += `- Voucher áp dụng cho tất cả các món ăn trong thực đơn.\n`;
+	        } else if (selectedFoodItems.length > 0) {
+	            condition += `- Voucher áp dụng cho các món: ${selectedFoodItems.join(", ")}.\n`;
+	        } else {
+	            condition += `- Voucher không áp dụng cho bất kỳ món ăn cụ thể nào.\n`;
+	        }
+
+	        document.getElementById("usageCondition").value = condition;
+	    }
+
+	    document.addEventListener("DOMContentLoaded", function () {
+	        const elementsToWatch = [
+	            "minOrderAmount", "discountType", "discountAmount", "maxDiscount",
+	            "maxUsage", "maxUsagePerUser", "startDate", "endDate", "applicableToAll"
+	        ];
+
+	        elementsToWatch.forEach(id => {
+	            document.getElementById(id).addEventListener("input", generateUsageCondition);
+	        });
+
+	        document.querySelectorAll(".menu-item-checkbox").forEach(item => {
+	            item.addEventListener("change", generateUsageCondition);
+	        });
+
+	        generateUsageCondition(); // Khởi tạo điều kiện ban đầu
+	    });
+	</script>
+
+    <!-- Liên kết Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

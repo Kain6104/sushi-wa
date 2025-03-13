@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý món ăn</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<style>
+		body {
+           font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+           display: flex;
+       }
+	   .table th {
+	   	     position: sticky;
+	   	     top: 0; /* Cố định phần đầu của bảng ở trên cùng */
+	   	     z-index: 2;
+	   	     background-color: #343a40;
+	   	     color: white;
+	   	     text-align: center;
+	   	 }
+	   .category-btn.active {
+	       background-color: #007bff;
+	       color: white;
+	   }
+	   .category-btn {
+	       margin: 5px;
+	   }
+
+	   .dropdown {
+	         position: relative;
+	     }
+
+	     .dropdown-menu {
+	         display: none;
+	         position: absolute;
+	         left: 0;
+	         top: 100%;
+	         background-color: #fff;
+	         border: 1px solid #ccc;
+	         list-style: none;
+	         padding: 0;
+	         margin: 0;
+	         z-index: 1000;
+	     }
+
+	     .dropdown-menu li a {
+	         display: block;
+	         padding: 10px 15px;
+	         text-decoration: none;
+	         color: #333;
+	     }
+
+	     .dropdown-menu li a:hover {
+	         background-color: #f1f1f1;
+	     }
+
+	     .dropdown:hover .dropdown-menu {
+	         display: block;
+	     }
+	   .main-content {
+             margin-left: 240px;
+             padding: 20px;
+             width: calc(100% - 240px);
+         }
+        .container {
+            max-width: 1200px;
+        }
+
+		/* Sidebar Styles */
+		.sidebar {
+		    width: 220px;
+		    height: 100vh;
+		    background-color: #343a40;
+		    color: white;
+		    padding: 20px;
+		    position: fixed;
+		}
+
+		.sidebar h2 {
+		    font-size: 24px;
+		    color: #f8f9fa;
+		    margin-bottom: 30px;
+		    text-align: center;
+		}
+
+		.sidebar ul {
+		    list-style-type: none;
+		    padding: 0;
+		}
+
+		.sidebar ul li {
+		    padding: 10px 15px;
+		    border-radius: 4px;
+		    margin-bottom: 5px;
+		    cursor: pointer;
+		}
+
+		.sidebar ul li:hover {
+		    background-color: #495057;
+		}
+
+		.sidebar a {
+		    text-decoration: none;
+		    color: white;
+		    display: block;
+		}
+
+
+        /* Header Styles */
+        h1 {
+            color: #343a40;
+            text-align: center;
+        }
+
+        .table {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 8px;
+        }
+
+        th {
+            background-color: #343a40;
+            color: rgb(255, 255, 255);
+            text-align: center;
+        }
+
+        td, th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
+        .modal-header {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 8px;
+        }
+
+        .modal-footer .btn {
+            border-radius: 50px;
+        }
+
+        .alert {
+            border-radius: 8px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }	
+	   </style>
+</head>
+<body>
+	<div class="sidebar">
+	    <h2>Admin Panel</h2>
+	    <ul>
+	        <li><a href="/index"><i class="fas fa-home"></i> Sushi Wa</a></li>
+	        <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+	        <li class="dropdown">
+	            <a href="#" class="dropdown-toggle">
+	                <i class="fas fa-box"></i> Products
+	            </a>
+	            <ul class="dropdown-menu">
+	                <li><a href="/admin/products">Danh sách món ăn</a></li>
+	                <li><a href="/admin/combos">Danh sách combo</a></li>
+	                <li><a href="/admin/combos/create">Tạo combo</a></li>
+	            </ul>
+	        </li>
+	        <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+	        <li><a href="/admin/customers"><i class="fas fa-users"></i> Customers</a></li>
+	        <li><a href="/admin/promotions"><i class="fas fa-tags"></i> Promotions</a></li>
+	        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+	    </ul>
+	</div>
+    <div class="main-content">
+        <h1>Quản lý món ăn</h1>
+		<!-- Thanh điều hướng danh mục -->
+		<div class="category-navigation text-center mb-4">
+		    <button class="btn category-btn active" data-category="all" onclick="filterItems(this)">Tất cả</button>
+		    <th:block th:each="category : ${categories}">
+				<button class="btn category-btn" 
+				        th:text="${category} + ' (' + ${categoryCounts.get(category) != null ? categoryCounts.get(category) : 0} + ')'" 
+				        th:attr="data-category=${category}" onclick="filterItems(this)">
+				</button>
+		    </th:block>
+		</div>
+		<!-- Phần hiển thị thông báo thành công -->
+		<div th:if="${successMessage}" class="alert alert-success" role="alert">
+			<div th:if="${successMessage != null}" class="alert alert-success" th:utext="${successMessage}"></div>
+		</div>
+		<div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+			<div th:if="${errorMessage}" th:utext="${errorMessage}"></div>
+		</div>
+        <!-- Button to trigger Add Product Modal -->
+        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addProductModal">Thêm món mới</button>
+
+        <!-- Display product table -->
+		<table class="table table-bordered">
+		    <thead>
+		        <tr>
+		            <th>Id Món ăn</th>
+		            <th>Mã món ăn</th>
+		            <th>Tên</th>
+		            <th>Mô tả</th>
+		            <th>Hình ảnh</th>
+		            <th>Phân loại</th>
+		            <th>Giá tiền</th>
+		            <th>Khuyến mãi</th>
+		            <th>Món ăn trong combo</th> <!-- Cột mới -->
+		            <th>Hành động</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+				
+				<tr class="no-items-row" style="display: none;">
+				    <td colspan="10" class="text-center">Món ăn chưa có <br> <br>
+					<button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addProductModal">Thêm món mới tại đây</button>
+				</td>
+					
+				</tr>
+
+		        <tr th:each="menuItem : ${menuItems}">
+		            <td th:text="${menuItem.itemId}"></td>
+		            <td th:text="${menuItem.itemCode}"></td>
+		            <td th:text="${menuItem.name}"></td>
+		            <td th:text="${menuItem.description}"></td>
+		            <td>
+		                <img th:src="${menuItem.imageUrl}" alt="Product Image" style="width: 100px;">
+		            </td>
+		            <td th:text="${menuItem.category}"></td>
+		            <td th:text="${menuItem.price}"></td>
+		            <td th:text="${menuItem.promotion}"></td>
+					<td th:text="${menuItem.avgRating}"></td>
+					<td>
+					    <!-- Kiểm tra nếu món ăn không thuộc combo nào -->
+					    <ul th:if="${menuItem.combos != null && !menuItem.combos.isEmpty()}">
+					        <li th:each="combo : ${menuItem.combos}">
+					            <a th:href="@{/combo-details/{token}(token=${combo.token})}" 
+					               th:text="${combo.comboName}"></a>
+					        </li>
+					    </ul>
+					    <!-- Hiển thị thông báo nếu không có combo -->
+					    <span th:if="${menuItem.combos == null || menuItem.combos.isEmpty()}">
+					        Chưa được liên kết với combo
+					    </span>
+					</td>
+		            <td>
+		                <a th:href="@{/product-details/{token}(token=${menuItem.token})}" class="btn btn-primary btn-sm">
+		                    Xem chi tiết
+		                </a>
+		                <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+		                        th:data-bs-target="'#editProductModal-' + ${menuItem.itemId}">
+		                    Sửa
+		                </button>
+		                <a th:href="@{/admin/products/delete/{itemId}(itemId=${menuItem.itemId})}" 
+		                      class="btn btn-danger btn-sm"
+		                      onclick="return confirm('Bạn có chắc chắn muốn xóa món này?');">
+		                      Xóa
+		                   </a>
+		            </td>
+		        </tr>
+		    </tbody>
+		</table>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" action="/admin/products/add">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Thêm món mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="name">Tên món ăn:</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+
+                        <label for="description">Mô tả:</label>
+                        <textarea id="description" name="description" class="form-control"></textarea>
+
+                        <label for="price">Giá tiền:</label>
+                        <input type="number" step="0.01" id="price" name="price" class="form-control" required>
+
+                        <label for="category">Phân loại:</label>
+                        <input type="text" id="category" name="category" class="form-control">
+
+                        <label for="ingredients">Nguyên liệu:</label>
+                        <input type="text" id="ingredients" name="ingredients" class="form-control">
+
+                        <label for="imageUrl">Đường dẫn hình ảnh:</label>
+                        <input type="text" id="imageUrl" name="imageUrl" class="form-control">
+
+                        <label for="promotion">Khuyến mãi:</label>
+                        <input type="text" id="promotion" name="promotion" class="form-control">
+
+                        <label for="itemCode">Item Code:</label>
+                        <input type="text" id="itemCode" name="itemCode" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	<!-- Edit Product Modal -->
+	<!-- Modal chỉnh sửa món ăn -->
+	<div th:each="menuItem : ${menuItems}" th:id="'editProductModal-' + ${menuItem.itemId}" class="modal fade" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="editProductModalLabel">Chỉnh sửa món ăn</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <form th:action="@{'/admin/products/edit/' + ${menuItem.itemId}}" method="post">
+	                <div class="modal-body">
+	                    <div class="mb-3">
+	                        <label for="name" class="form-label">Tên món ăn:</label>
+	                        <input type="text" class="form-control" id="name" name="name" th:value="${menuItem.name}" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="description" class="form-label">Mô tả:</label>
+	                        <textarea class="form-control" id="description" name="description" th:text="${menuItem.description}"></textarea>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="price" class="form-label">Giá tiền:</label>
+	                        <input type="number" step="0.01" class="form-control" id="price" name="price" th:value="${menuItem.price}" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="category" class="form-label">Phân loại:</label>
+	                        <input type="text" class="form-control" id="category" name="category" th:value="${menuItem.category}">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="ingredients" class="form-label">Nguyên liệu:</label>
+	                        <input type="text" class="form-control" id="ingredients" name="ingredients" th:value="${menuItem.ingredients}">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="imageUrl" class="form-label">Đường dẫn hình ảnh:</label>
+	                        <input type="text" class="form-control" id="imageUrl" name="imageUrl" th:value="${menuItem.imageUrl}">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="promotion" class="form-label">Khuyến mãi:</label>
+	                        <input type="text" class="form-control" id="promotion" name="promotion" th:value="${menuItem.promotion}">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="itemCode" class="form-label">Item Code:</label>
+	                        <input type="text" class="form-control" id="itemCode" name="itemCode" th:value="${menuItem.itemCode}" readonly>
+	                    </div>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+	                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+	<script>
+		function filterItems(button) {
+		    const category = button.getAttribute("data-category");
+		    const rows = document.querySelectorAll("table tbody tr");
+		    let hasItems = false;
+
+		    document.querySelectorAll(".category-btn").forEach(btn => btn.classList.remove("active"));
+		    button.classList.add("active");
+
+		    rows.forEach(row => {
+		        const itemCategory = row.querySelector("td:nth-child(6)")?.innerText.trim();
+		        if (category === "all" || itemCategory === category) {
+		            row.style.display = "";
+		            hasItems = true;
+		        } else {
+		            row.style.display = "none";
+		        }
+		    });
+
+		    // Hiển thị thông báo nếu không có món ăn
+		    const noItemsRow = document.querySelector(".no-items-row");
+		    if (!hasItems && noItemsRow) {
+		        noItemsRow.style.display = "";
+		    } else if (noItemsRow) {
+		        noItemsRow.style.display = "none";
+		    }
+		}
+
+	</script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm/Sửa danh mục</title>
+</head>
+<body>
+    <h1 th:text="${category.id != null ? 'Sửa danh mục' : 'Thêm danh mục mới'}"></h1>
+    <form th:action="@{${category.id != null ? '/admin/categories/edit' : '/admin/categories/add'}}" th:object="${category}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên danh mục</label>
+            <input type="text" class="form-control" id="name" name="name" th:value="${category.name}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Mô tả</label>
+            <textarea class="form-control" id="description" name="description" th:text="${category.description}"></textarea>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="visible" name="visible" th:checked="${category.visible}">
+            <label class="form-check-label" for="visible">Hiển thị</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </form>
+</body>
+</html>

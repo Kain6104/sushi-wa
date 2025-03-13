@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Kết quả tìm kiếm cho: [[${query}]]</title>
+	<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">	
+	<!-- Link đến Bootstrap CSS từ CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<!-- Thêm đoạn mã này ngay trước thẻ đóng </body> -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Custom CSS -->
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="/index.css" rel="stylesheet">
+	<link href="/menu.css" rel="stylesheet">
+
+	<style>
+		body {
+		    font-family: 'Poppins', sans-serif;
+		    background-color: #fdf5f3;
+		    margin-top: 80px;
+		}
+		.highlight-keyword {
+		    background-color: #FF5733; /* Màu sắc của từ khóa */
+			color: white;
+		}
+		.form-control::placeholder {
+		    font-size: 12px; /* Điều chỉnh kích thước chữ */
+		}
+		.container2 {
+		    max-width: 1080px;
+		    margin: 0 auto;
+		}
+
+		.card {
+		    border: none;
+		    position: relative;
+		    overflow: hidden;
+		}
+
+		.card-img-top {
+		    height: 250px;
+		    object-fit: cover;
+		}
+
+		.card-overlay {
+		    position: absolute;
+		    bottom: 15px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 85%;
+		    background: rgba(0, 0, 0, 0.7);
+		    color: white;
+		    padding: 10px;
+		    border-radius: 5px;
+		    max-height: 120px; /* Giới hạn chiều cao overlay */
+		    overflow-y: auto; /* Hiển thị thanh cuộn nếu cần */
+		}
+
+		.card-title {
+		    color: rgb(0, 0, 0);
+		    font-size: 1rem;
+		    font-weight: bold;
+		    margin-bottom: 5px;
+		}
+
+		.card-description {
+		    max-height: 100px; /* Giới hạn chiều cao mô tả */
+		    overflow-y: auto; /* Hiển thị thanh cuộn */
+		    font-size: 0.85rem;
+		    line-height: 1.4;
+		    margin: 0;
+		}
+
+		.btn {
+		    font-size: 0.9rem;
+		}
+		.nav-link2 {
+		     text-decoration: none; /* Xóa gạch chân mặc định */
+		     color: inherit;
+		     transition: color 0.3s ease, text-decoration 0.3s ease;
+		 }
+
+		 .nav-link2:hover {
+		     color: rgb(255, 255, 255); /* Đổi màu chữ khi rê chuột */
+		     text-decoration: underline; /* Thêm gạch chân khi rê chuột */
+		 }
+		 .form-control {
+		        text-overflow: ellipsis; /* Thêm dấu "..." khi nội dung quá dài */
+		        white-space: nowrap;    /* Không cho phép xuống dòng */
+		        overflow: hidden;       /* Ẩn nội dung thừa vượt quá ô input */
+		    }
+		.h2{
+			margin-bottom: 2000px;
+		}	
+	</style>
+</head>
+<body>
+	<!-- Navbar trên màn hình lớn -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-none d-sm-block">
+	    <div class="container">
+	        <a class="navbar-brand" href="http://localhost:8080/">
+	            <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi">
+	        </a>
+			<form action="/search" method="get" id="voiceSearchForm">
+			    <div class="input-group">
+			        <!-- Input search -->
+					<input type="text" name="query" id="voiceInput" class="form-control" th:value="${query}" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+			        <!-- Biểu tượng mic ghi âm -->
+			        <button type="button" id="voiceSearchBtn" title="Tìm kiếm bằng giọng nói" class="btn btn-primary">🎙️  </button>
+			    </div>
+			</form>
+	       
+	        <div class="collapse navbar-collapse" id="navbarNav">
+	            <ul class="navbar-nav ms-auto">
+	                <li class="nav-item"><a class="nav-link" href="menu">Đặt món</a></li>
+	                <li class="nav-item"><a class="nav-link" href="promotions">Khuyến mãi</a></li>
+	                <li class="nav-item"><a class="nav-link" href="my_order" th:if="${session.loggedInUser != null}">Đơn hàng</a></li>
+	                <li class="nav-item"><a class="nav-link" href="profile" th:if="${session.loggedInUser != null}">Khách hàng</a></li>
+	                <li class="nav-item"><a class="nav-link" href="contact">Liên hệ</a></li>
+	                <li class="nav-item" th:if="${session.role == 'admin'}">
+	                    <a class="nav-link" href="/admin">Trang Admin</a>
+	                </li>
+	                <li class="nav-item" th:if="${session.loggedInUser == null}">
+	                    <a class="nav-link" href="/login">Đăng nhập</a>
+	                </li>
+	                <li class="nav-item dropdown" th:if="${session.loggedInUser != null}">
+	                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                        [[${session.loggedInUser}]]
+	                    </a>
+	                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+	                        <a class="dropdown-item" href="/logout">Đăng xuất</a>
+	                    </div>
+	                </li>
+	            </ul>
+	            <!-- Biểu tượng giỏ hàng -->
+				<div class="nav-item">
+					<a href="/cart">
+				    <button class="btn btn-outline-primary position-relative">
+				        <i class="fas fa-shopping-cart"></i> <!-- Biểu tượng giỏ hàng -->
+				        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+				            <span th:text="${cartItemCount}">0</span>
+				        </span>
+				    </button>
+					</a>
+				</div>
+	        </div>
+	    </div>
+	</nav>
+	<!-- Form Tìm kiếm -->
+	<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+	    <form action="/search" method="get">
+	        <div class="input-group">
+	            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+	                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+	            </a>
+	            <!-- Input search -->
+	            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+	            <!-- Biểu tượng giỏ hàng với số lượng món -->
+				<a href="/cart" class="input-group-text">
+	                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+	                    <i class="fas fa-shopping-cart"></i>
+	                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+	                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+	                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+	                    </span>
+	                </button>
+	            </a>
+	        </div>
+	    </form>
+	</div>
+
+	<!-- Navbar cố định dưới cùng cho di động -->
+	<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+	    <div class="container">
+	        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+	            <li class="nav-item text-center">
+	                <a class="nav-link" href="/index">
+	                    <i class="fas fa-home"></i><br>Trang chủ
+	                </a>
+	            </li>
+	            <li class="nav-item text-center">
+	                <a class="nav-link" href="menu">
+	                    <i class="fas fa-utensils"></i><br>Đặt Món
+	                </a>
+	            </li>
+	            <li class="nav-item text-center">
+	                <a class="nav-link" href="promotions">
+	                    <i class="fas fa-tag"></i><br>Khuyến mãi
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="my_order">
+	                    <i class="fas fa-box"></i><br>Đơn hàng
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/customer">
+	                    <i class="fas fa-user"></i><br>[[${session.loggedInUser}]]
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:if="${session.loggedInUser == null}">
+	                <a class="nav-link" href="/login">
+	                    <i class="fas fa-user"></i><br>Đăng nhập
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</nav>
+<h2 class="mt-5">Kết quả tìm kiếm cho: [[${query}]]</h2>
+
+<h2 th:if="${not #lists.isEmpty(searchedMenuItems)}">Món ăn</h2>
+
+<div class="container2" id="menuItemsContainer">
+    <!-- Sử dụng row bao quanh tất cả các cột -->
+    <div class="row g-4">
+        <!-- Lặp qua tất cả các món ăn -->
+        <div class="col-md-4 item-card" th:each="item : ${searchedMenuItems}">
+            <div class="card">
+                <!-- Hình ảnh món ăn -->
+                <a title="Xem chi tiết" th:href="@{/product-details/{token}(token=${item.token})}" class="nav-link">
+                    <img th:src="${item.imageUrl}" class="card-img-top" th:alt="'Image of ' + ${item.name}" 
+                         data-toggle="modal" data-target="#itemModal" th:attr="data-item-id=${item.getItemId()}">
+                </a>
+
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${item.name}">Tên món</h5>
+                    <p class="card-text" th:text="${item.description}">Mô tả món ăn</p>
+                    <p class="text-danger" th:text="'Khuyến mãi: ' + ${item.promotion}">Khuyến mãi</p>
+                    <p class="price" th:text="${#numbers.formatDecimal(item.price, 0, 0)}">Giá</p>
+
+                    <form action="/add-to-cart" method="post" onsubmit="localStorage.setItem('scrollPosition', window.scrollY)">
+                        <input type="hidden" name="id" th:value="${item.getItemId()}" />
+                        <button type="submit" class="btn add-to-cart-btn mt-3">Thêm vào giỏ hàng</button>
+                    </form>    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 th:if="${not #lists.isEmpty(searchedPromotions)}">Khuyến mãi</h2>
+<div class="container2 py-5"> 
+    <div class="row">
+        <div class="col-md-6 item-card mb-4" th:each="promotion : ${searchedPromotions}">
+            <a th:href="@{/promotion/{id}(id=${promotion.token})}" class="nav-link2"> 
+                <h5 class="card-title text-center" th:text="${promotion.title}"></h5> 
+            </a>
+            <div class="card">
+                <a th:href="@{/promotion/{id}(id=${promotion.token})}" class="nav-link2"> 
+
+                    <!-- Ảnh khuyến mãi (kiểm tra null hoặc rỗng) -->
+                    <img th:src="${#strings.isEmpty(promotion.imageUrl) ? 'https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg' : promotion.imageUrl}" 
+                         alt="Promotion Image" class="card-img-top">
+                    
+                    <!-- Thông tin chồng lên ảnh -->
+                    <div class="card-overlay">
+                        <p th:utext="${promotion.description}" class="card-text text-truncate card-description"></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal 
+	<div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="itemModalLabel">Thông tin món ăn</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                
+					<img id="modalItemImage" class="img-fluid mb-3" src="" alt="Món ăn" onclick="expandImage(this)" />
+					<h5 id="modalItemName">Tên món</h5>
+	                <p id="modalItemDescription">Mô tả món ăn</p>
+	                <p id="modalItemPromotion" class="text-danger">Khuyến mãi: </p>
+	                <p id="modalItemIngredients" class="text-info">Thành phần: </p>
+	                <p id="modalItemPrice">Giá: </p>
+	                <p id="modalItemAvgRating" class="text-danger">Đánh giá trung bình: </p>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>-->
+<h2 th:if="${not #lists.isEmpty(searchedOrders)}">
+	<div style="
+	    min-width: 80px; 
+	    display: flex; 
+	    justify-content: center; 
+	    align-items: center; 
+	    text-align: center;
+	">
+	    <div style="
+	        background: rgba(0, 0, 0, 0.7); 
+	        padding: 20px; 
+	        border-radius: 10px; 
+	        max-width: 600px; 
+	        width: 90%;
+	    ">
+	        <h2 style="
+	            font-size: 28px; 
+	            font-weight: bold; 
+	            color: #FFD700; 
+	            margin-bottom: 15px;
+	        ">Đơn hàng của bạn</h2>
+
+	        <ul style="list-style: none; padding: 0;">
+	            <li th:each="order : ${searchedOrders}" style="
+	                background: rgba(255, 255, 255, 0.2); 
+	                padding: 10px; 
+	                margin: 8px 0; 
+	                border-radius: 5px; 
+	                transition: 0.3s;
+	            " 
+	            onmouseover="this.style.background='rgba(255, 255, 255, 0.4)'; this.style.transform='scale(1.05)';" 
+	            onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='scale(1)';">
+	                <a th:href="@{/my_order(modal='orderDetailsModal_' + ${order.orderCode})}" 
+	                   th:text="${order.orderCode}" 
+	                   style="color: #FFD700; text-decoration: none; font-weight: bold; font-size: 18px; display: block;">
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</div>
+</h2>
+	<footer class="footer mt-5">
+		    <div class="container">
+				<div class="row g-4">
+		            <div class="col-12">
+						<!-- Dòng hiển thị Hotline và nút "Xem thêm" -->
+						<div class="d-flex justify-content-between align-items-center">
+						    <!-- Hiển thị số Hotline -->
+						    <p class="mb-0"><strong>Hotline: 097 480 2998</strong></p>
+						    <!-- Dropdown để xem thêm -->
+							<button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#footerDetails" aria-expanded="false" aria-controls="footerDetails" id="toggleButton">
+							    Xem thêm
+							</button>
+						</div>
+		                <!-- Các chi tiết footer ẩn -->
+		                <div class="collapse mt-3" id="footerDetails">
+		                    <div class="row">
+		                        <div class="col-md-4">
+		                            <h5 class="footer-logo">Sushi Wa - Sushi và Lẩu Băng chuyền</h5>
+		                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7867190715383!2d106.71906057480564!3d10.827627489324223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175291a441368eb%3A0x7a1dd7b554da4946!2sSushi%20Wa!5e0!3m2!1svi!2s!4v1728326309222!5m2!1svi!2s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+		                        </div>
+		                        <div class="cuoicung col-md-4">
+		                            <h5>Bạn cần hỗ trợ</h5>
+									Hoteline:  <strong> <a href="tel:0974802998">097 480 2998</a> </strong><br>
+
+		                            <p>
+		                                Địa chỉ: <a class="btn-reservation" href="https://maps.google.com/maps/dir//Sushi+Wa+TTTM+Giga+Mall,+240+%C4%90.+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng+Hi%E1%BB%87p+B%C3%ACnh+Ch%C3%A1nh+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh" target="_blank">Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh</a><br>
+		                                Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+		                            </p>
+		                            <div class="social-icons">
+		                                <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+		                                <a href="https://www.twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+		                                <a href="https://www.youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+		                                <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+		                            </div>
+		                            <div class="payment-icons mt-3">
+		                                <a href="https://visa.com" target="_blank" aria-label="Visa"><img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa"></a>
+		                                <a href="https://www.mastercard.com" target="_blank" aria-label="Mastercard"><img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard"></a>
+		                                <a href="https://www.stripe.com" target="_blank" aria-label="Stripe"><img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe"></a>
+		                                <a href="https://www.paypal.com" target="_blank" aria-label="Paypal"><img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal"></a>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-2">
+		                            <h5>Hướng dẫn</h5>
+		                            <ul class="list-unstyled">
+		                                <li><a href="#">Cách đặt món</a></li>
+		                                <li><a href="#">Phương thức thanh toán</a></li>
+		                                <li><a href="#">Giao hàng tận nơi</a></li>
+		                                <li><a href="#">Chính sách đổi trả</a></li>
+		                                <li><a href="#">Câu hỏi thường gặp</a></li>
+		                            </ul>
+		                        </div>
+		                        <div class="col-md-2">
+		                            <h5>Hỗ trợ khách hàng</h5>
+		                            <ul class="list-unstyled">
+		                                <li><a href="#">Liên hệ chúng tôi</a></li>
+		                                <li><a href="#">Tư vấn thực đơn</a></li>
+		                                <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+		                                <li><a href="#">Chính sách bảo mật</a></li>
+		                                <li><a href="#">Điều khoản sử dụng</a></li>
+		                            </ul>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		            <div class="cuoicung col-12 mt-3 mb-3 text-center text-secondary">
+		                <i>Bản quyền thuộc &copy;<script>document.write(new Date().getFullYear());</script> Sushi Wa.</i>
+		            </div>
+		        </div>
+		    </div>
+		</footer>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Lấy từ khóa tìm kiếm từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query');
+
+        // Tìm tất cả các phần tử chứa mô tả
+        const descriptions = document.querySelectorAll('.promotion-description p');
+
+        descriptions.forEach(function(description) {
+            if (query) {
+                // Tìm và tô màu từ khóa
+                const regex = new RegExp('(' + query + ')', 'gi'); // Tạo regex để tìm từ khóa
+                description.innerHTML = description.innerHTML.replace(regex, '<span class="highlight-keyword">$1</span>');
+            }
+        });
+    });
+	// Mở modal và hiển thị chi tiết món ăn
+	document.querySelectorAll('.card-img-top').forEach(item => {
+	    item.addEventListener('click', function(event) {
+	        const itemId = event.target.getAttribute('data-item-id');
+	        const itemName = event.target.closest('.card').querySelector('.card-title').textContent;
+	        const itemDescription = event.target.closest('.card').querySelector('.card-text').textContent;
+	        const itemPromotion = event.target.closest('.card').querySelector('.text-danger').textContent;
+	        const itemIngredients = event.target.closest('.card').querySelector('.text-danger').textContent;
+	        const itemPrice = event.target.closest('.card').querySelector('.price').textContent;
+	        const itemAvgRating = event.target.closest('.card').querySelector('.text-danger').textContent;
+	        const itemImageUrl = event.target.getAttribute('src');
+
+	        // Cập nhật modal với thông tin món ăn
+	        document.getElementById('modalItemImage').setAttribute('src', itemImageUrl);
+	        document.getElementById('modalItemName').textContent = itemName;
+	        document.getElementById('modalItemDescription').textContent = itemDescription;
+	        document.getElementById('modalItemPromotion').textContent = itemPromotion;
+	        document.getElementById('modalItemIngredients').textContent = "Thành phần: " + itemIngredients;
+	        document.getElementById('modalItemPrice').textContent = "Giá: " + itemPrice;
+	        document.getElementById('modalItemAvgRating').textContent = "Đánh giá: " + itemAvgRating;
+
+	        // Mở modal
+	        var modal = new bootstrap.Modal(document.getElementById('itemModal'));
+	        modal.show();
+	    });
+	});
+	function expandImage(imgElement) {
+	    // Tạo một cửa sổ mới để hiển thị hình ảnh lớn hơn
+	    var expandedImg = window.open("", "_blank", "width=800,height=600");
+
+	    // Viết HTML vào cửa sổ mới
+	    expandedImg.document.write(`
+	        <html>
+	            <head>
+	                <title>Hình ảnh lớn</title>
+	                <style>
+	                    body {
+	                        text-align: center;
+	                        margin: 0;
+	                        padding: 0;
+	                        background-color: #f4f4f4;
+	                    }
+	                    img {
+	                        max-width: 100%;
+	                        max-height: 100vh;
+	                        object-fit: contain;
+	                        margin-top: 20px;
+	                    }
+	                </style>
+	            </head>
+	            <body>
+	                <img src="${imgElement.src}" alt="Hình ảnh phóng to" />
+	            </body>
+	        </html>
+	    `);
+	    
+	    // Đảm bảo cửa sổ có thể đóng được
+	    expandedImg.document.close();
+	}
+	// Lắng nghe sự kiện collapse (mở/thu gọn)
+   document.getElementById('toggleButton').addEventListener('click', function() {
+       var isExpanded = this.getAttribute('aria-expanded') === 'true';
+       this.textContent = isExpanded ? 'Rút gọn' : 'Xem thêm';
+   });
+   document.querySelector('input[name="query"]').value = queryValue;
+
+</script>
+
+</body>
+</html>

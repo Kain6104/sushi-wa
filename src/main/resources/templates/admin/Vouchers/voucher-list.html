@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Voucher</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #d9534f;
+            text-align: center;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #d9534f;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #c9302c;
+        }
+        .table th {
+            background-color: #ff7043;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+        }
+        .table tbody tr:hover {
+            background-color: #ffe0b2;
+        }
+        .alert {
+            text-align: center;
+            font-weight: bold;
+        }
+		.countdown-timer {
+		    display: inline-block;
+		    padding: 5px 10px;
+		    font-size: 14px;
+		    font-weight: bold;
+		    color: white;
+		    background: linear-gradient(45deg, #ff416c, #ff4b2b); /* Hiệu ứng gradient */
+		    border-radius: 8px;
+		    box-shadow: 0 0 10px rgba(255, 75, 43, 0.6);
+		    text-align: center;
+		    min-width: 120px;
+		    transition: all 0.3s ease;
+		}
+
+		.countdown-timer:hover {
+		    transform: scale(1.1);
+		    box-shadow: 0 0 15px rgba(255, 75, 43, 0.8);
+		}
+
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Danh sách Voucher</h1>
+
+        <!-- Hiển thị thông báo -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="/admin/vouchers/create" class="btn btn-primary">+ Thêm Voucher</a>
+        </div>
+
+        <!-- Tabs để phân loại Voucher -->
+        <ul class="nav nav-tabs" id="voucherTabs">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#ongoing">🔵 Đang diễn ra</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#upcoming">🟢 Sắp diễn ra</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#expired">🔴 Đã hết hạn</a>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <!-- Voucher đang diễn ra -->
+            <div id="ongoing" class="tab-pane fade show active">
+                <h3 class="text-center text-primary">🔵 Voucher đang diễn ra</h3>
+                <div th:if="${#lists.isEmpty(ongoingVouchers)}" class="alert alert-info text-center">Không có voucher đang diễn ra.</div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+						<thead>
+				              <tr>
+								  <th>Diễn ra trong</th>
+				                  <th>Mã Voucher</th>
+				                  <th>Giảm Giá</th>
+				                  <th>Giá trị đơn tối thiểu</th>
+				                  <th>Giảm tối đa</th>
+				                  <th>Lượt sử dụng</th>
+				                  <th>Tối đa sử dụng</th>
+				                  <th>Tối đa mỗi người</th>
+				                  <th>Ngày bắt đầu</th>
+				                  <th>Ngày kết thúc</th>
+				                  <th>Áp dụng</th>
+				                  <th>Điều kiện sử dụng</th>
+				                  <th>Hành động</th>
+				                  <th>Lịch sử</th>
+								  <th>Người tạo</th>
+								  <th>Thời gian tạo</th>
+				              </tr>
+				          </thead>
+				          <tbody>
+				              <tr th:each="voucher : ${ongoingVouchers}">
+									<td class="d-none">
+									    <span class="countdown-timer countdown-start" th:data-start="${voucher.startDate}"></span>
+									</td>
+									<td>
+									    <span class="countdown-timer countdown-end" th:data-end="${voucher.endDate}"></span>
+									</td>
+				                  <td th:text="${voucher.code}"></td>
+				                  <td>
+				                      <span th:text="${voucher.discountAmount}"></span>
+				                      <span th:if="${voucher.discountType == 'PERCENT'}">%</span>
+				                      <span th:if="${voucher.discountType == 'AMOUNT'}">VNĐ</span>
+				                  </td>
+				                  <td th:text="${voucher.minOrderAmount}"></td>
+				                  <td th:text="${voucher.maxDiscount}"></td>
+				                  <td th:text="${voucher.usageCount}"></td>
+				                  <td th:text="${voucher.maxUsage}"></td>
+				                  <td th:text="${voucher.maxUsagePerUser}"></td>
+				                  <td th:text="${voucher.startDate}"></td>
+				                  <td th:text="${voucher.endDate}"></td>
+				                  <td style="text-align: justify;">
+				                      <span th:if="${voucher.applicableToAll}">Tất cả món ăn</span>
+				                      <div th:if="${!voucher.applicableToAll}" class="border p-3 rounded bg-white">
+				                          <div class="row">
+				                              <div th:each="item : ${voucher.applicableItems}" class="col-md-12 col-sm-12 mb-2">
+				                                  <div class="d-flex align-items-center">
+				                                      <div class="flex-grow-1 ml-2">
+				                                          <strong th:text="${item.name}"></strong>
+				                                          <small class="text-muted d-block">
+				                                              (Giá: <span th:text="${item.price}"></span> VND)
+				                                          </small>
+				                                      </div>
+				                                      <img th:src="${item.imageUrl}" alt="Hình ảnh món ăn" 
+				                                           class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+				                                  </div>
+				                              </div>
+				                          </div>
+				                      </div>
+				                  </td>
+				                  <td style="text-align: justify;">
+				                      <pre th:text="${voucher.usageCondition}"></pre>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/edit/{code}(code=${voucher.code})}" class="btn btn-warning btn-sm">✏ Chỉnh sửa</a>
+				                      <a th:href="@{/admin/vouchers/delete/{code}(code=${voucher.code})}" class="btn btn-danger btn-sm"
+				                         onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này?')">🗑 Xóa</a>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/history/{voucherCode}(voucherCode=${voucher.code})}" class="btn btn-info btn-sm">📜 Xem lịch sử</a>
+				                  </td>
+								  <td th:text="${voucher.createdBy.username}"></td>
+								  <td th:text="${voucher.createdAt != null ? #temporals.format(voucher.createdAt, 'dd/MM/yyyy HH:mm:ss') : 'Chưa có dữ liệu'}"></td>
+								  <td>
+									<form th:action="@{/user/vouchers/save/{voucherCode}(voucherCode=${voucher.code})}" method="post">
+																		    <button type="submit" class="btn btn-success btn-sm">💾 Lưu</button>
+																		</form>
+	  	  						  </td>
+							   </tr>
+				          </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Voucher sắp diễn ra -->
+            <div id="upcoming" class="tab-pane fade">
+                <h3 class="text-center text-success">🟢 Voucher sắp diễn ra</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+						<thead>
+				              <tr>
+								  <th>Thời gian đếm ngược</th> <!-- Cột đếm ngược -->
+				                  <th>Mã Voucher</th>
+				                  <th>Giảm Giá</th>
+				                  <th>Giá trị đơn tối thiểu</th>
+				                  <th>Giảm tối đa</th>
+				                  <th>Lượt sử dụng</th>
+				                  <th>Tối đa sử dụng</th>
+				                  <th>Tối đa mỗi người</th>
+				                  <th>Ngày bắt đầu</th>
+				                  <th>Ngày kết thúc</th>
+				                  <th>Áp dụng</th>
+				                  <th>Điều kiện sử dụng</th>
+				                  <th>Hành động</th>
+				                  <th>Lịch sử</th>
+								  <th>Người tạo</th>
+								  <th>Thời gian tạo</th>
+								  <th>Lưu vào ví</th> <!-- Thêm tiêu đề cột -->
+				              </tr>
+				          </thead>
+				          <tbody>
+				              <tr th:each="voucher : ${upcomingVouchers}">
+									<td>
+									    <span class="countdown-timer countdown-start" th:data-start="${voucher.startDate}"></span>
+									</td>
+									<td class="d-none">
+									    <span class="countdown-timer countdown-end" th:data-end="${voucher.endDate}"></span>
+									</td>
+				                  <td th:text="${voucher.code}"></td>
+				                  <td>
+				                      <span th:text="${voucher.discountAmount}"></span>
+				                      <span th:if="${voucher.discountType == 'PERCENT'}">%</span>
+				                      <span th:if="${voucher.discountType == 'AMOUNT'}">VNĐ</span>
+				                  </td>
+				                  <td th:text="${voucher.minOrderAmount}"></td>
+				                  <td th:text="${voucher.maxDiscount}"></td>
+				                  <td th:text="${voucher.usageCount}"></td>
+				                  <td th:text="${voucher.maxUsage}"></td>
+				                  <td th:text="${voucher.maxUsagePerUser}"></td>
+				                  <td th:text="${voucher.startDate}"></td>
+				                  <td th:text="${voucher.endDate}"></td>
+				                  <td style="text-align: justify;">
+				                      <span th:if="${voucher.applicableToAll}">Tất cả món ăn</span>
+				                      <div th:if="${!voucher.applicableToAll}" class="border p-3 rounded bg-white">
+				                          <div class="row">
+				                              <div th:each="item : ${voucher.applicableItems}" class="col-md-12 col-sm-12 mb-2">
+				                                  <div class="d-flex align-items-center">
+				                                      <div class="flex-grow-1 ml-2">
+				                                          <strong th:text="${item.name}"></strong>
+				                                          <small class="text-muted d-block">
+				                                              (Giá: <span th:text="${item.price}"></span> VND)
+				                                          </small>
+				                                      </div>
+				                                      <img th:src="${item.imageUrl}" alt="Hình ảnh món ăn" 
+				                                           class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+				                                  </div>
+				                              </div>
+				                          </div>
+				                      </div>
+				                  </td>
+				                  <td style="text-align: justify;">
+				                      <pre th:text="${voucher.usageCondition}"></pre>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/edit/{code}(code=${voucher.code})}" class="btn btn-warning btn-sm">✏ Chỉnh sửa</a>
+				                      <a th:href="@{/admin/vouchers/delete/{code}(code=${voucher.code})}" class="btn btn-danger btn-sm"
+				                         onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này?')">🗑 Xóa</a>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/history/{voucherCode}(voucherCode=${voucher.code})}" class="btn btn-info btn-sm">📜 Xem lịch sử</a>
+				                  </td>
+								  <td th:text="${voucher.createdBy.username}"></td>
+								  <td th:text="${voucher.createdAt != null ? #temporals.format(voucher.createdAt, 'dd/MM/yyyy HH:mm:ss') : 'Chưa có dữ liệu'}"></td>
+								  <td>
+									<form th:action="@{/user/vouchers/save/{voucherCode}(voucherCode=${voucher.code})}" method="post">
+									    <button type="submit" class="btn btn-success btn-sm">💾 Lưu</button>
+									</form>
+		  						  </td>
+							  </tr>
+							
+				          </tbody>
+                    </table>
+					<div th:if="${#lists.isEmpty(upcomingVouchers)}" class="alert alert-info text-center">Không có voucher sắp diễn ra.</div>
+                </div>
+            </div>
+            <!-- Voucher đã hết hạn -->
+            <div id="expired" class="tab-pane fade">
+                <h3 class="text-center text-danger">🔴 Voucher đã hết hạn</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+						<thead>
+				              <tr>
+							      <th>Thời gian diễn ra</th>
+				                  <th>Mã Voucher</th>
+				                  <th>Giảm Giá</th>
+				                  <th>Giá trị đơn tối thiểu</th>
+				                  <th>Giảm tối đa</th>
+				                  <th>Lượt sử dụng</th>
+				                  <th>Tối đa sử dụng</th>
+				                  <th>Tối đa mỗi người</th>
+				                  <th>Ngày bắt đầu</th>
+				                  <th>Ngày kết thúc</th>
+				                  <th>Áp dụng</th>
+				                  <th>Điều kiện sử dụng</th>
+				                  <th>Hành động</th>
+				                  <th>Lịch sử</th>
+				              </tr>
+				          </thead>
+				          <tbody>
+				              <tr th:each="voucher : ${expiredVouchers}">
+								<td class="d-none">
+								    <span class="countdown-timer countdown-start" th:data-start="${voucher.startDate}"></span>
+								</td>
+								<td>
+								    <span class="countdown-timer countdown-end" th:data-end="${voucher.endDate}"></span>
+								</td>
+				                  <td th:text="${voucher.code}"></td>
+				                  <td>
+				                      <span th:text="${voucher.discountAmount}"></span>
+				                      <span th:if="${voucher.discountType == 'PERCENT'}">%</span>
+				                      <span th:if="${voucher.discountType == 'AMOUNT'}">VNĐ</span>
+				                  </td>
+				                  <td th:text="${voucher.minOrderAmount}"></td>
+				                  <td th:text="${voucher.maxDiscount}"></td>
+				                  <td th:text="${voucher.usageCount}"></td>
+				                  <td th:text="${voucher.maxUsage}"></td>
+				                  <td th:text="${voucher.maxUsagePerUser}"></td>
+				                  <td th:text="${voucher.startDate}"></td>
+				                  <td th:text="${voucher.endDate}"></td>
+				                  <td style="text-align: justify;">
+				                      <span th:if="${voucher.applicableToAll}">Tất cả món ăn</span>
+				                      <div th:if="${!voucher.applicableToAll}" class="border p-3 rounded bg-white">
+				                          <div class="row">
+				                              <div th:each="item : ${voucher.applicableItems}" class="col-md-12 col-sm-12 mb-2">
+				                                  <div class="d-flex align-items-center">
+				                                      <div class="flex-grow-1 ml-2">
+				                                          <strong th:text="${item.name}"></strong>
+				                                          <small class="text-muted d-block">
+				                                              (Giá: <span th:text="${item.price}"></span> VND)
+				                                          </small>
+				                                      </div>
+				                                      <img th:src="${item.imageUrl}" alt="Hình ảnh món ăn" 
+				                                           class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+				                                  </div>
+				                              </div>
+				                          </div>
+				                      </div>
+				                  </td>
+				                  <td style="text-align: justify;">
+				                      <pre th:text="${voucher.usageCondition}"></pre>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/edit/{code}(code=${voucher.code})}" class="btn btn-warning btn-sm">✏ Chỉnh sửa</a>
+				                      <a th:href="@{/admin/vouchers/delete/{code}(code=${voucher.code})}" class="btn btn-danger btn-sm"
+				                         onclick="return confirm('Bạn có chắc chắn muốn xóa voucher này?')">🗑 Xóa</a>
+				                  </td>
+				                  <td>
+				                      <a th:href="@{/admin/vouchers/history/{voucherCode}(voucherCode=${voucher.code})}" class="btn btn-info btn-sm">📜 Xem lịch sử</a>
+				                  </td>
+				              </tr>
+				          </tbody>
+                    </table>
+					<div th:if="${#lists.isEmpty(expiredVouchers)}" class="alert alert-info text-center">Không có voucher đã hết hạn.</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	    let tabs = document.querySelectorAll("#voucherTabs .nav-link");
+
+	    // Lấy tab đang lưu trong LocalStorage, nếu không có thì mặc định là '#ongoing'
+	    let activeTab = localStorage.getItem("activeVoucherTab") || "#ongoing";
+
+	    // Xóa lớp 'active' khỏi tất cả tab và nội dung tab
+	    tabs.forEach(tab => tab.classList.remove("active"));
+	    document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.remove("show", "active"));
+
+	    // Kích hoạt tab đã lưu trong LocalStorage
+	    let activeTabElement = document.querySelector(`a[href="${activeTab}"]`);
+	    if (activeTabElement) {
+	        activeTabElement.classList.add("active");
+	        document.querySelector(activeTab).classList.add("show", "active");
+	    }
+
+	    // Lắng nghe sự kiện chuyển tab và lưu vào LocalStorage
+	    tabs.forEach(tab => {
+	        tab.addEventListener("click", function (event) {
+	            event.preventDefault(); // Ngăn chặn hành vi mặc định
+	            let selectedTab = this.getAttribute("href");
+
+	            // Lưu tab vào LocalStorage
+	            localStorage.setItem("activeVoucherTab", selectedTab);
+
+	            // Cập nhật hiển thị tab
+	            tabs.forEach(t => t.classList.remove("active"));
+	            document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.remove("show", "active"));
+
+	            this.classList.add("active");
+	            document.querySelector(selectedTab).classList.add("show", "active");
+	        });
+	    });
+	});
+	
+	function countdownTimer(element, targetTime) {
+	      function updateTimer() {
+	          let now = new Date().getTime();
+	          let timeDiff = targetTime - now;
+
+	          if (timeDiff <= 0) {
+	              element.innerText = "Đã hết hạn";
+	              element.style.background = "#777"; // Màu xám khi hết hạn
+	              return;
+	          }
+
+	          let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+	          let hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+	          let minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+	          let seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+	          element.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+	      }
+
+	      updateTimer();
+	      let interval = setInterval(updateTimer, 1000);
+
+	      setTimeout(() => clearInterval(interval), targetTime - new Date().getTime());
+	  }
+
+	  document.addEventListener("DOMContentLoaded", function () {
+	      document.querySelectorAll(".countdown-start").forEach(element => {
+	          let startDateStr = element.getAttribute("data-start");
+	          let startDate = new Date(startDateStr).getTime();
+	          countdownTimer(element, startDate);
+	      });
+
+	      document.querySelectorAll(".countdown-end").forEach(element => {
+	          let endDateStr = element.getAttribute("data-end");
+	          let endDate = new Date(endDateStr).getTime();
+	          countdownTimer(element, endDate);
+	      });
+	  });
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+		body {
+           font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+           display: flex;
+       }
+	   .main-content {
+             margin-left: 240px;
+             padding: 20px;
+             width: calc(100% - 240px);
+         }
+        .container {
+            max-width: 1200px;
+        }
+
+		/* Sidebar Styles */
+		.sidebar {
+		    width: 220px;
+		    height: 100vh;
+		    background-color: #343a40;
+		    color: white;
+		    padding: 20px;
+		    position: fixed;
+		}
+
+		.sidebar h2 {
+		    font-size: 24px;
+		    color: #f8f9fa;
+		    margin-bottom: 30px;
+		    text-align: center;
+		}
+
+		.sidebar ul {
+		    list-style-type: none;
+		    padding: 0;
+		}
+
+		.sidebar ul li {
+		    padding: 10px 15px;
+		    border-radius: 4px;
+		    margin-bottom: 5px;
+		    cursor: pointer;
+		}
+
+		.sidebar ul li:hover {
+		    background-color: #495057;
+		}
+
+		.sidebar a {
+		    text-decoration: none;
+		    color: white;
+		    display: block;
+		}
+
+
+        /* Header Styles */
+        h1 {
+            color: #343a40;
+            text-align: center;
+        }
+
+        td, th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
+        .modal-header {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 8px;
+        }
+
+        .modal-footer .btn {
+            border-radius: 50px;
+        }
+
+        .alert {
+            border-radius: 8px;
+        }
+		.payment-summary {
+				    background-color: #ffffff;
+				    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+				}
+
+				.payment-summary h6 {
+				    font-size: 1.1rem;
+				    color: #333;
+				    margin-bottom: 1rem;
+				}
+
+				.payment-summary p {
+				    font-size: 0.95rem;
+				    margin-bottom: 0.5rem;
+				}
+
+				.payment-summary .text-danger {
+				    color: #e74c3c;
+				}
+
+				.payment-summary .text-success {
+				    color: #27ae60;
+				}
+
+				.payment-summary .voucher-code {
+				    font-weight: bold;
+				    color: #d35400;
+				}
+
+				.payment-summary .reward-points {
+				    font-size: 0.9rem;
+				    margin-top: 0.5rem;
+				}
+
+				.payment-summary .final-amount {
+				    font-size: 1.2rem;
+				    margin-top: 1rem;
+				}
+
+				.payment-summary .amount {
+				    font-size: 1.5rem;
+				}
+
+				.action-buttons .btn-warning {
+				    background-color: #f39c12;
+				    color: #ffffff;
+				    font-weight: bold;
+				}
+
+				.action-buttons .btn-light {
+				    border: 1px solid #ccc;
+				    color: #333;
+				}
+
+				.action-buttons .btn-danger {
+				    background-color: #e74c3c;
+				    color: #ffffff;
+				}
+
+				.action-buttons .btn-primary {
+				    background-color: #3498db;
+				    color: #ffffff;
+				}
+				.used-points {
+				    font-size: 14px;
+				    background-color: #fff;
+				    color: #d9534f; /* Màu đỏ cho chữ */
+				    border: 1px solid #d9534f; /* Viền đỏ */
+				    padding: 2px 6px; /* Khoảng cách trong */
+				    border-radius: 12px; /* Bo tròn */
+				    font-weight: bold; /* Chữ đậm */
+				    margin-right: 10px; /* Khoảng cách bên phải */
+				}
+
+				.text-end {
+				    float: right; /* Căn phải giá trị tiền */
+				    font-size: 16px;
+				    color: #d9534f; /* Màu đỏ */
+				}
+				.voucher-code {
+				    font-size: 14px;
+				    background-color: #fff;
+				    color: #d9534f; /* Màu đỏ chữ */
+				    border: 1px solid #d9534f; /* Viền đỏ */
+				    padding: 2px 6px; /* Khoảng cách trong */
+				    border-radius: 12px; /* Bo tròn */
+				    font-weight: bold; /* Chữ đậm */
+				    margin-right: 10px; /* Khoảng cách bên phải */
+				}
+				.bg-light {
+				    background-color: #f8f9fa; /* Màu nền nhạt */
+				}
+
+				.badge.bg-success {
+				    font-size: 12px;
+				    font-weight: bold;
+				    border-radius: 20px; /* Bo tròn */
+				    line-height: 1.5;
+				}
+
+				.text-secondary {
+				    color: #6c757d; /* Màu xám nhạt */
+				}
+
+				.fw-bold {
+				    font-weight: bold;
+				}
+
+				.text-primary {
+				    color: #007bff; /* Màu xanh chữ link */
+				}
+
+				a.text-primary:hover {
+				    text-decoration: underline; /* Gạch chân khi hover */
+				}
+
+				.product-list {
+				    max-height: 200px; /* Chiều cao tối đa (có thể tùy chỉnh theo nhu cầu) */
+				    overflow-y: auto; /* Hiển thị thanh cuộn nếu nội dung vượt quá */
+				    border: 1px solid #ddd; /* Đường viền (tuỳ chọn) */
+				    padding: 10px; /* Khoảng cách bên trong (tuỳ chọn) */
+				  
+				}
+				.table-container {
+				    max-width: 100%; /* Đặt chiều rộng tối đa, ví dụ: 100% của vùng chứa */
+				    overflow-x: auto; /* Hiển thị thanh cuộn ngang nếu nội dung vượt quá */
+				  
+				    padding: 10px; /* Khoảng cách bên trong (tùy chọn) */
+				   
+				}
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+		/* Form tìm kiếm và lọc */
+		#filterForm {
+		    padding: 10px;
+		    background-color: #f8f9fa; /* Màu nền nhạt */
+		    border-radius: 8px; /* Bo góc */
+		    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+		    width: 100%; /* Căn chỉnh full chiều ngang */
+		}
+
+		#filterForm label {
+		    font-size: 14px;
+		    font-weight: bold;
+		    color: #343a40; /* Màu chữ tiêu đề */
+		}
+
+		#filterForm .form-control,
+		#filterForm .form-select {
+		    border: 1px solid #ced4da; /* Viền nhẹ */
+		    border-radius: 4px; /* Bo tròn viền */
+		    padding: 8px; /* Khoảng cách bên trong */
+		    font-size: 14px; /* Kích thước chữ */
+		    color: #495057; /* Màu chữ */
+		}
+
+		#filterForm .form-control:focus,
+		#filterForm .form-select:focus {
+		    border-color: #007bff; /* Đổi màu viền khi focus */
+		    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25); /* Đổ bóng khi focus */
+		}
+
+		#filterForm button {
+		    padding: 8px 16px; /* Khoảng cách nút */
+		    font-size: 14px; /* Kích thước chữ nút */
+		    font-weight: bold;
+		    background-color: #007bff; /* Màu nền nút */
+		    color: #ffffff; /* Màu chữ nút */
+		    border: none;
+		    border-radius: 4px; /* Bo góc */
+		    transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng hover */
+		}
+
+		#filterForm button:hover {
+		    background-color: #0056b3; /* Màu nền nút khi hover */
+		    transform: scale(1.05); /* Phóng to nhẹ khi hover */
+		}
+
+		#filterForm div {
+		    display: flex;
+		    flex-direction: column; /* Sắp xếp các thành phần theo cột */
+		    gap: 4px; /* Khoảng cách giữa label và input */
+		    min-width: 150px; /* Đảm bảo chiều rộng tối thiểu */
+		}
+
+		#filterForm .form-control {
+		    min-width: 200px; /* Đảm bảo input tìm kiếm đủ lớn */
+		}
+
+		@media (max-width: 768px) {
+		    #filterForm {
+		        flex-direction: column; /* Xếp dọc khi trên màn hình nhỏ */
+		        gap: 16px; /* Tăng khoảng cách giữa các thành phần */
+		    }
+
+		    #filterForm div,
+		    #filterForm .form-control,
+		    #filterForm .form-select,
+		    #filterForm button {
+		        width: 100%; /* Full chiều ngang */
+		    }
+		}
+
+    </style>
+</head>
+<body>
+	<div class="sidebar">
+		        <h2>Admin Panel</h2>
+		        <ul>
+					<li><a href="/index"><i class="fas fa-home"></i> Sushi Wa</a></li>
+		            <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>      
+		            <li><a href="/admin/products"><i class="fas fa-box"></i> Products</a></li>
+		            <li><a href="/admin/orders"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+		            <li><a href="/admin/customers"><i class="fas fa-users"></i> Customers</a></li>
+		            <li><a href="/admin/promotions"><i class="fas fa-tags"></i> Promotions</a></li>
+		            <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+		        </ul>
+		    </div>
+
+    <div class="main-content">
+        <h1>Quản lý đơn hàng</h1>
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<!-- Form tìm kiếm và lọc -->
+			<!-- Form tìm kiếm và lọc -->
+			<form id="filterForm" class="row gx-3 gy-2 align-items-center p-3 bg-light rounded shadow-sm">
+			    <!-- Tìm kiếm -->
+			    <div class="col-md-4 col-lg-3">
+			        <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm mã đơn hoặc tên khách hàng">
+			    </div>
+
+			    <!-- Lọc ngày -->
+			    <div class="col-md-3 col-lg-2">
+			        <label for="startDate" class="form-label mb-1">Từ ngày:</label>
+			        <input type="date" class="form-control" id="startDate">
+			    </div>
+			    <div class="col-md-3 col-lg-2">
+			        <label for="endDate" class="form-label mb-1">Đến ngày:</label>
+			        <input type="date" class="form-control" id="endDate">
+			    </div>
+				<div class="col-md-6 col-lg-4">
+				    <label class="form-label mb-1">Trạng thái đơn hàng:</label>
+				    <div class="d-flex flex-wrap gap-2">
+				        <div class="form-check">
+							<a href="/admin/orders">
+								<input class="form-check-input" type="radio" name="statusFilter" value="" th:checked="${statusFilter == ''}">
+					            <label class="form-check-label" for="allStatus">Tất cả</label>
+							</a>
+				        </div>
+				        <div class="form-check">
+				            <a href="/admin/orders?statusFilter=DELIVERED">
+								<input class="form-check-input" type="radio" name="statusFilter" value="DELIVERED" th:checked="${statusFilter == 'DELIVERED'}">
+								<label class="form-check-label" for="deliveredStatus">Đã nhận hàng</label>
+							</a>	
+						
+				        </div>
+				        <div class="form-check">
+							<a href="/admin/orders?statusFilter=PENDING">
+								<input class="form-check-input" type="radio" name="statusFilter" value="PENDING" th:checked="${statusFilter == 'PENDING'}">
+			         			<label class="form-check-label" for="pendingStatus">Đang chờ xử lý</label>
+							</a>
+				          
+				        </div>
+				        <div class="form-check">
+							<a href="/admin/orders?statusFilter=DELIVERING">
+					            <input class="form-check-input" type="radio" name="statusFilter" value="DELIVERING" th:checked="${statusFilter == 'DELIVERING'}">
+					            <label class="form-check-label" for="deliveringStatus">Đang giao hàng</label>
+							</a>
+				        </div>
+				        <div class="form-check">
+					         <a href="/admin/orders?statusFilter=CANCELED">   
+								<input class="form-check-input" type="radio" name="statusFilter"  value="CANCELED" th:checked="${statusFilter == 'CANCELED'}">
+					            <label class="form-check-label" for="canceledStatus">Đã hủy</label>
+							</a>
+				        </div>
+				    </div>
+				</div>
+
+			    <!-- Sắp xếp giá -->
+			    <div class="col-md-3 col-lg-2">
+			        <label for="priceSort" class="form-label mb-1">Sắp xếp giá:</label>
+			        <select id="priceSort" class="form-select">
+			            <option value="">Mặc định</option>
+			            <option value="asc">Giá thấp đến cao</option>
+			            <option value="desc">Giá cao đến thấp</option>
+			        </select>
+			    </div>
+
+			    <!-- Nút lọc -->
+			    <div class="col-md-2 d-flex align-items-end">
+			        <button type="button" class="btn btn-primary w-100" id="applyFilter">Lọc</button>
+			    </div>
+			</form>
+		</div>
+
+		<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+		<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Alerts -->
+        <div th:if="${message}" class="alert alert-success">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>OrderID</th>
+                    <th>OrderCode</th>
+                    <th>UserName</th>
+                    <th>Người nhận</th>
+                    <th>Sđt</th>
+                    
+                    <th>Ngày đặt hàng</th>
+                    <th>Ngày giao hàng</th>
+                    
+                    <th>Tổng tiền đơn hàng</th>
+                    <th>Trạng thái</th>
+					<th>Lý do hủy</th>
+					<th>Hành động</th>
+					<th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order, stat : ${orders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.OrderCode}"></td>
+					<td>
+					    <a th:href="@{'/admin/customers/details/' + ${order.user.secureToken}}" class="btn btn-link text-decoration-none text-primary">
+					        <span th:text="${order.username}"></span>
+					    </a>
+					</td>
+                    <td th:text="${order.name}"></td>
+                    <td th:text="${order.phone}"></td>
+                    <td th:text="${order.getFormattedOrderDate}"></td>
+                    <td th:text="${order.getFormattedDeliveryTime}"></td>
+                    <td th:text="${order.formattedTotalAmount}+'đ'"></td>
+                    <td th:text="${order.getStatusDescription}"></td>
+					<td th:text="${order.cancelReason}"></td>
+					<td>
+		               <!-- Nút xác nhận -->
+		               <a th:if="${order.status == 'DELIVERING'}" th:href="@{'/admin/orders/confirm/' + ${order.orderCode}}" class="btn btn-primary">Đã giao hàng</a>
+		               <!-- Nút giao hàng -->
+		               <a th:if="${order.status == 'PENDING'}" th:href="@{'/admin/orders/deliver/' + ${order.orderCode}}" class="btn btn-outline-success">Bắt đầu giao hàng</a>
+					   <!-- Nút giao hàng -->
+					   <a	 th:if="${order.status == 'DELIVERED' || order.status =='PENDING'}" type="button" 
+			                 class="btn btn-danger" 
+			                 th:attr="data-bs-target='#cancelModal__' + ${stat.index}" 
+			                 data-bs-toggle="modal">Hủy đơn</a>
+					 
+					   <td>
+					       <a th:href="@{'/admin/orders/details/' + ${order.orderCode}}" class="btn btn-info">
+					           Xem chi tiết
+					       </a>
+					   </td>  
+					  
+                </tr>
+				
+            </tbody>
+        </table>
+    </div>
+
+	<div th:each="order, stat : ${orders}" 
+	     th:id="'orderDetailsModal_' + ${stat.index}" 
+	     class="modal fade" 
+	     tabindex="-1" 
+	     role="dialog" 
+	     aria-labelledby="orderDetailsModalLabel" 
+	     aria-hidden="true">
+	    <div class="modal-dialog modal-xl" role="document">
+	        <div class="modal-content">
+	            <!-- Header -->
+				<div class="modal-header justify-content-center">
+				    <h3 class="modal-title fw-bold">Chi tiết đơn hàng</h3>
+				</div>
+	            <!-- Body -->
+	            <div class="modal-body">
+	                <div class="row">
+	                    <!-- Left Panel -->
+	                    <div class="col-md-8">
+	                        <!-- Thông tin đơn hàng -->
+							<div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
+							    <div>
+							        <p class="mb-1">
+							            <strong>Mã đơn hàng:</strong> 
+							            <span class="text-primary fw-bold" th:text="${order.OrderCode}"></span>
+							        </p>
+							        <p class="mb-1 text-secondary small">
+							            <span th:text="${order.getFormattedOrderDate ?: ''}"></span> | <span  th:text="${order.getFormattedDeliveryTime}"></span> 
+							        </p>
+							    </div>
+							    <div>
+							        <span class="badge bg-success text-white px-3 py-2" th:text="${order.status}"></span>
+							    </div>
+							</div>
+	                        <!-- Thông tin khách hàng và người nhận -->
+	                        <div class="row mb-3">
+	                            <div class="col-md-6">
+	                                <div class="card">
+	                                    <div class="card-body">
+	                                        <h6 class="card-title fw-bold">Người gửi</h6>
+	                                        <p class="card-text"><strong>Tên: </strong>Sushi Wa</p>
+	                                        <p class="card-text"><strong>Số điện thoại: </strong>097 480 2998</p>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-md-6">
+	                                <div class="card">
+	                                    <div class="card-body">
+	                                        <h6 class="card-title fw-bold">Khách hàng</h6>
+	                                        <p class="card-text"><strong>Tên:</strong>  <span th:text="${order.name ?: ''}"></span></p>
+	                                        <p class="card-text"><strong>Số điện thoại:</strong>  <span th:text="${order.phone ?: ''}"></span></p>
+	                                        <p class="card-text"><strong>Địa chỉ:</strong>  <span th:text="${order.address ?: ''}"></span></p>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <hr>
+							<!-- Danh sách sản phẩm -->
+							<h6 class="fw-bold mb-3">Danh sách món ăn</h6>
+							<div class="product-list">
+							    <td colspan="5" th:utext="${order.itemsDescription}"></td>
+							</div>
+	                    </div>
+	                    <!-- Right Panel -->
+						<aside class="col-md-4">
+						    <div class="payment-summary border p-3 rounded">
+						        <h6 class="fw-bold text-center mb-3">Phương thức thanh toán</h6>
+								
+								<p>
+								    <strong>
+								        <span th:text="${order.paymentMethod}"></span>
+								        <span class="text-end" th:text="${order.formattedTotalAmount} + 'đ'"></span>
+								    </strong>
+								    <span th:if="${order.paymentMethod == 'momo'}">
+								        <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="Momo" style="width: 24px; height: 24px; margin-left: 8px;">
+								    </span>
+								</p>
+						        <hr>
+						        <p><strong>Tạm tính:</strong> <span class="text-end fw-bold" th:text="${order.formattedTotalPrice ?: ''}+'đ'"></span></p>
+						       
+								<p class="reward-points text-danger"></p>
+						        <p><strong>Phí vận chuyển:</strong> <span class="text-end fw-bold text-success">Miễn phí</span></p>
+								<p>
+								    <strong>Mã giảm giá:</strong> 
+								    <span class="badge text-danger border border-danger fw-bold" th:text="${order.voucherCode ?: 'Không dùng'}"></span>
+								    <span class="text-end fw-bold" th:text="${order.voucherValue ?: '0đ'}"></span>
+								</p>
+								<hr style="margin-top: 100px; border-top: 2px dashed #000;">
+								<p>
+								    <strong>Dùng điểm:</strong> 
+								    <span class="badge text-danger border border-danger fw-bold" th:text="${order.pointsUsed} + ' POINT'"></span>
+								    <span class="text-end fw-bold" th:text="'-' + (${order.getFormattedPoints}) + 'đ'"></span>
+								</p>
+						        <hr>
+						        <p class="final-amount">
+						            <strong>Cần thanh toán:</strong>
+						            <span class="amount text-danger fw-bold"  th:text="${order.formattedTotalAmount}+'đ'" ></span>
+									<p class="reward-points text-danger">
+									   <span th:text="'+' + ${order.formattedRewardPoints} + ' điểm'"></span>
+									</p>
+						        </p>
+						       
+						    </div>
+							<div class="action-buttons text-center mt-3">
+							    <div class="d-flex justify-content-center gap-3">
+							        <button type="button" class="btn btn-outline-secondary position-relative">
+							            Ghi chú
+							            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+							                2
+							            </span>
+							        </button>
+							        <button type="button" class="btn btn-outline-secondary">Sửa đơn</button>
+		       								<!-- Nút hủy đơn hàng -->
+					               <a  th:if="${order.status != 'Cancelled'}" th:href="@{'/admin/orders/cancel/' + ${order.orderCode}}" class="btn btn-outline-danger">Hủy đơn</a>
+							    </div>
+							    <button type="button" class="btn btn-danger mt-3 w-100"  data-bs-dismiss="modal">Đóng</button>
+							</div>
+						</aside>
+	                </div>
+	            </div>
+	            
+	        </div>
+	    </div>
+	</div>
+	<!-- Modal Hủy Đơn Hàng -->
+	<tr th:each="order, stat : ${orders}">
+	    <div class="modal fade" th:id="'cancelModal__' + ${stat.index}" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <h5 class="modal-title">Hủy đơn hàng</h5>
+	                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	                </div>
+	                <div class="modal-body">
+	                    <p>Bạn đang hủy đơn hàng <strong th:text="${order.orderCode}"></strong>.</p>
+	                    <form th:action="@{/admin/orders/cancel/{orderCode}(orderCode=${order.orderCode})}" method="post">
+	                        <div class="mb-3">
+	                            <label for="adminReason" class="form-label">Lý do hủy:</label>
+	                            <textarea class="form-control" id="adminReason" name="adminReason" rows="3" required></textarea>
+	                        </div>
+	                        <div class="modal-footer">
+	                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+	                            <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+	                        </div>
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</tr>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+		    const searchInput = document.getElementById("searchInput");
+		    const startDate = document.getElementById("startDate");
+		    const endDate = document.getElementById("endDate");
+		    const statusRadios = document.querySelectorAll('input[name="statusFilter"]');
+		    const priceSort = document.getElementById("priceSort");
+		    const applyFilter = document.getElementById("applyFilter");
+		    const tableBody = document.querySelector("table tbody");
+
+		    const originalRows = Array.from(tableBody.rows);
+
+		    const parseDate = (dateString) => {
+		        const [time, date] = dateString.split(" ");
+		        const [hours, minutes, seconds] = time.split(":").map(Number);
+		        const [day, month, year] = date.split("/").map(Number);
+		        return new Date(year, month - 1, day, hours, minutes, seconds);
+		    };
+
+		    const filterTable = () => {
+		        const searchValue = searchInput.value.toLowerCase();
+		        const startDateValue = startDate.value ? new Date(startDate.value) : null;
+		        const endDateValue = endDate.value ? new Date(endDate.value) : null;
+		        const selectedStatus = document.querySelector('input[name="statusFilter"]:checked').value;
+		        const sortOrder = priceSort.value;
+
+		        let filteredRows = originalRows.filter(row => {
+		            const orderCode = row.cells[1].innerText.toLowerCase();
+		            const customerName = row.cells[2].innerText.toLowerCase();
+		            const orderDateText = row.cells[5].innerText.trim();
+		            const orderStatus = row.cells[8].innerText.trim();
+
+		            const orderDate = parseDate(orderDateText);
+
+		            const matchesSearch = orderCode.includes(searchValue) || customerName.includes(searchValue);
+		            const matchesDate =
+		                (!startDateValue || orderDate >= startDateValue) &&
+		                (!endDateValue || orderDate <= endDateValue);
+		            const matchesStatus = !selectedStatus || orderStatus === getStatusDescription(selectedStatus);
+
+		            return matchesSearch && matchesDate && matchesStatus;
+		        });
+
+		        if (sortOrder) {
+		            filteredRows.sort((rowA, rowB) => {
+		                const priceA = parseFloat(rowA.cells[7].innerText.replace(/[^\d]/g, ""));
+		                const priceB = parseFloat(rowB.cells[7].innerText.replace(/[^\d]/g, ""));
+		                return sortOrder === "asc" ? priceA - priceB : priceB - priceA;
+		            });
+		        }
+
+		        tableBody.innerHTML = "";
+		        filteredRows.forEach(row => tableBody.appendChild(row));
+		    };
+
+		    const getStatusDescription = (status) => {
+		        switch (status.toUpperCase()) {
+		            case "DELIVERED":
+		                return "Đã nhận hàng";
+		            case "PENDING":
+		                return "Đang chờ xử lý";
+		            case "DELIVERING":
+		                return "Đang giao hàng";
+		            case "CANCELED":
+		                return "Đã hủy";
+		            default:
+		                return "Trạng thái không xác định";
+		        }
+		    };
+
+		    applyFilter.addEventListener("click", filterTable);
+		    searchInput.addEventListener("input", filterTable);
+		    statusRadios.forEach(radio => radio.addEventListener("change", filterTable));
+		});
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

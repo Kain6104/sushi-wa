@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin cá nhân</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>	
+    <!-- Link đến Bootstrap CSS từ CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="/index.css" rel="stylesheet">	
+	<style>
+	    /* Căn chỉnh toàn bộ phần container */
+	    /* Tiêu đề */
+	    h1 {
+			font-family: 'Poppins', sans-serif;
+	        font-weight: 700;
+	        color: #333;
+	        text-align: center;
+	        margin-bottom: 30px;
+	    }
+
+	    /* Các nhãn thông tin */
+	    .form-group label {
+	        font-weight: bold;
+	        color: #555;
+	    }
+		/* Giá trị thông tin */
+		.form-group p {
+		    background-color: #f8f9fa;
+		    padding: 10px 15px;
+		    border: 1px solid #ddd;
+		    border-radius: 5px;
+		    font-size: 1rem;
+		    color: #444;
+		    word-wrap: break-word;  /* Cho phép ngắt dòng khi từ quá dài */
+		    word-break: break-word; /* Ngắt dòng nếu không có dấu cách */
+		    overflow-wrap: break-word; /* Giúp xử lý các chuỗi dài */
+		    max-width: 500px; /* Đảm bảo không bị tràn khung */
+		    white-space: pre-wrap; /* Giữ nguyên dấu xuống dòng nhưng tự động xuống khi cần */
+		}
+
+
+	 
+
+	    .btn-primary {
+	        background-color: #ff6600;
+	        border-color: #ff6600;
+	    }
+
+	    .btn-primary:hover {
+	        background-color: #e65c00;
+	        border-color: #e65c00;
+	    }
+
+	    .btn-secondary {
+	        background-color: #007bff;
+	        border-color: #007bff;
+	    }
+
+	    .btn-secondary:hover {
+	        background-color: #0056b3;
+	        border-color: #0056b3;
+	    }
+
+	    /* Modal tiêu đề */
+	    .modal-title {
+	        font-size: 1.5rem;
+	        color: #333;
+	    }
+	    /* Footer */
+	    .footer {
+	        font-size: 0.9rem;
+	        color: #666;
+	        border-top: 1px solid #ddd;
+	    }
+		.container {
+		    display: flex;
+		    justify-content: space-between;
+		    flex-wrap: wrap; /* Cho phép các phần tử chuyển xuống dòng khi không đủ không gian */
+		    gap: 30px;
+		}
+
+		.container .form-group {
+		    margin-bottom: 20px;
+		}
+
+		.table-container {
+		    flex: 1;
+		    min-width: 300px; /* Đảm bảo bảng Top 5 Món Ăn có chiều rộng tối thiểu */
+		}
+
+		h1, h3 {
+		    text-align: left;
+		    font-weight: bold;
+		}
+
+		table {
+		    width: 100%;
+		    border-collapse: collapse;
+		}
+		.custom-link {
+		   color: blue; /* Màu xanh mặc định */
+		   text-decoration: none; /* Tùy chọn, nếu không muốn gạch dưới */
+		 }
+	
+		 .custom-link:hover {
+		   color: orange; /* Màu cam khi rê chuột */
+		   text-decoration: none; /* Tùy chọn, thêm gạch dưới khi rê chuột */
+		 }
+		th, td {
+		    padding: 10px;
+		    text-align: left;
+		    border: 1px solid #ddd;
+		}
+
+		th {
+		    background-color: #f4f4f4;
+		}
+		/* Đảm bảo bảng có thể cuộn khi vượt quá chiều rộng màn hình */
+		.table-responsive {
+		    overflow-x: auto;
+		    width: 100%;
+		    max-width: 100%;
+		}
+
+		@media (max-width: 768px) {
+		    .table-container {
+		        margin-top: 20px;
+		        width: 100%;
+		    }
+		}
+
+		/* Thanh tiến trình */
+		.progress-container {
+		    flex: 1;
+		    background-color: #e0e0e0;
+		    border-radius: 10px;
+		    height: 25px;
+		    position: relative;
+		    overflow: hidden;
+		    margin: 0 15px;
+		}
+
+		.progress-bar {
+		    height: 100%;
+		    width: 0%;
+		    border-radius: 10px;
+		    text-align: center;
+		    line-height: 25px;
+		    font-weight: bold;
+		    color: black;
+		    transition: width 0.5s ease-in-out;
+		}
+
+		.progress-bar span {
+		    position: absolute;
+		    width: 100%;
+		    text-align: center;
+		}
+
+		/* Căn chỉnh nhãn hạng thành viên */
+		.tier-labels {
+		    display: flex;
+		    justify-content: space-between;
+		    margin-top: 5px;
+		    font-weight: bold;
+		}
+
+
+	</style>
+
+</head>
+<body>
+	<!-- Navbar -->
+<!-- Navbar -->
+	<!-- Navbar trên màn hình lớn -->
+	<th:block th:replace="fragments/header :: header"></th:block>
+	<script src="/js/chatbot.js"></script>
+	<!-- Form Tìm kiếm -->
+		<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+		    <form action="/search" method="get">
+		        <div class="input-group">
+		            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+		                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+		            </a>
+		            <!-- Input search -->
+		            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+		            <!-- Biểu tượng giỏ hàng với số lượng món -->
+					<a href="/cart" class="input-group-text">
+		                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+		                    <i class="fas fa-shopping-cart"></i>
+		                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+		                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+		                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+		                    </span>
+		                </button>
+		            </a>
+		        </div>
+		    </form>
+		</div>
+
+		<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+		    <div class="container">
+		        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'index')} ? 'active'">
+		                <a class="nav-link" href="/index">
+		                    <i class="fas fa-home"></i><br>Trang chủ
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'menu')} ? 'active'">
+		                <a class="nav-link" href="/menu">
+		                    <i class="fas fa-utensils"></i><br>Đặt Món
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'promotions')} ? 'active'">
+		                <a class="nav-link" href="/promotions">
+		                    <i class="fas fa-tag"></i><br>Khuyến mãi
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+		                th:if="${session.loggedInUser != null}">
+		                <a class="nav-link" href="/my_order">
+		                    <i class="fas fa-box"></i><br>Đơn hàng
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'customer')} ? 'active'"
+		                th:if="${session.loggedInUser != null}">
+		                <a class="nav-link" href="/customer">
+		                    <i class="fas fa-user"></i><br>[[${session.loggedInUser}]]
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'login')} ? 'active'"
+		                th:if="${session.loggedInUser == null}">
+		                <a class="nav-link" href="/login">
+		                    <i class="fas fa-user"></i><br>Đăng nhập
+		                </a>
+		            </li>
+		        </ul>
+		    </div>
+		</nav>
+		<div class="col-4 text-right d-block d-sm-none">
+			<a href="/customer" class="nav-link">
+				<i class="fas fa-arrow-left"></i> Quay lại
+			</a>
+		</div>
+	<div class="container mt-5">
+	    <div>
+	        <h1>Thông tin cá nhân</h1>
+			<!-- Thông báo lỗi/thành công -->
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>	
+			<div class="form-group">
+	            <label>Tên đăng nhập:</label>
+	            <p th:text="${user.username}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Tên:</label>
+	            <p th:text="${user.name}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Email:</label>
+	            <p th:text="${user.email}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Số điện thoại:</label>
+	            <p th:text="${user.phone}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Địa chỉ:</label>
+	            <p th:text="${user.address}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Số điểm khả dụng:</label>
+	            <p th:text="${user.points}"></p>
+	        </div>
+	        <div class="form-group">
+	            <label>Tổng chi tiêu:</label>
+	            <p th:text="${totalSpending}+' ₫'"></p>
+	        </div>
+			
+			<div class="">
+			    <label>Hạng thành viên:</label>
+			    <p><strong id="membership-tier" class="d-none">Đang tải...</strong></p>
+				<div class="d-flex">  		
+					<span id="current-tier">Hạng hiện tại</span>
+				    <!-- Thanh tiến trình -->
+				    <div class="progress-container">
+		
+				        <div id="progress-bar" class="progress-bar">
+				            <span id="progress-text">0%</span>
+				        </div>
+		
+				    </div>
+					<span id="next-tier">Hạng tiếp theo</span>
+				</div>	
+			</div>
+
+			<!-- Ẩn totalSpending để JS lấy dữ liệu -->
+			<span id="totalSpendingValue" style="display:none;" th:text="${totalSpending}"></span>
+
+			<!-- Nhúng file JS -->
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+				    // Lấy tổng chi tiêu từ thẻ hidden
+					let totalSpending = parseFloat(
+					    document.getElementById("totalSpendingValue").textContent
+					        .replace(/\./g, '') // Xóa dấu chấm ngăn cách hàng nghìn
+					        .replace(/,/g, '.') // Chuyển dấu phẩy thành dấu chấm (định dạng số thập phân)
+					);
+
+				    let membershipTier = "Đồng";
+				    let nextTier = "Bạc";
+				    let progressValue = `0 / 5.000.000`;
+				    let progressColor = "#CD7F32"; // Màu Đồng mặc định
+				    let nextThreshold = 5_000_000;
+
+				    if (totalSpending < 5_000_000) {
+				        membershipTier = "Đồng";
+				        nextTier = "Bạc";
+				        nextThreshold = 5_000_000;
+				    } else if (totalSpending < 10_000_000) {
+				        membershipTier = "Bạc";
+				        nextTier = "Vàng";
+				        nextThreshold = 10_000_000;
+				        progressColor = "#C0C0C0"; // Bạc
+				    } else if (totalSpending < 20_000_000) {
+				        membershipTier = "Vàng";
+				        nextTier = "Bạch Kim";
+				        nextThreshold = 20_000_000;
+				        progressColor = "#FFD700"; // Vàng
+				    } else {
+				        membershipTier = "Bạch Kim";
+				        nextTier = "Bạch Kim"; // Không có cấp cao hơn
+				        nextThreshold = totalSpending; // Đạt mức cao nhất
+				        progressColor = "#E5E4E2"; // Bạch Kim
+				    }
+
+				    // Cập nhật tiến trình theo dạng "đã chi tiêu / cần để lên hạng"
+				    progressValue = `${totalSpending.toLocaleString()} / ${nextThreshold.toLocaleString()}`;
+
+				    // Cập nhật giao diện
+				    document.getElementById("membership-tier").innerHTML = `<strong>${membershipTier}</strong>`;
+				    document.getElementById("next-tier").textContent = nextTier;
+				    document.getElementById("current-tier").textContent = membershipTier;
+				    
+				    let progressBar = document.getElementById("progress-bar");
+				    let progressPercentage = (totalSpending / nextThreshold) * 100;
+				    progressBar.style.width = progressPercentage + "%";
+				    progressBar.style.backgroundColor = progressColor;
+				    document.getElementById("progress-text").textContent = progressValue;
+				});
+			</script>
+			<div class="form-group mt-3">
+				<!-- Nút Đổi email -->
+				<button type="button" class="btn btn-primary" id="changeEmailBtn">Đổi email</button>
+
+				<!-- Form ẩn đi ban đầu -->
+				<div class="form-group" id="emailForm" style="display: none;">
+				    <form action="/profile/request-email-change" method="post">
+				        <div class="mb-3">
+				            <label for="currentEmail" class="form-label">Email hiện tại:</label>
+				            <input type="email" id="currentEmail" name="currentEmail" class="form-control" placeholder="Nhập email hiện tại" required>
+				            <button type="submit" class="btn btn-warning">Gửi mã OTP</button>
+				        </div>
+				    </form>
+				</div>
+
+				<!-- JavaScript để hiển thị form khi nhấp vào "Đổi email" -->
+				<script>
+				    document.getElementById("changeEmailBtn").addEventListener("click", function() {
+				        var emailForm = document.getElementById("emailForm");
+				        if (emailForm.style.display === "none") {
+				            emailForm.style.display = "block"; // Hiển thị form
+				        } else {
+				            emailForm.style.display = "none"; // Ẩn form
+				        }
+				    });
+				</script>
+
+				<!-- Bước 2 - Nhập mã OTP -->
+				<div class="form-group" id="emailForm2" style="display: none;">
+				    <form action="/profile/verify-email-code" method="post">
+				        <div class="mb-3">
+				            <label for="verificationCode" class="form-label">Mã xác thực:</label>
+				            <input type="text" id="verificationCode" name="otp" class="form-control" placeholder="Nhập mã xác thực 6 số" required>
+				            <button type="submit" class="btn btn-success">Xác minh</button>
+				        </div>
+				    </form>
+				</div>
+				<!-- JavaScript để hiển thị form khi nhấp vào "Đổi email" -->
+			<script>
+			    document.getElementById("changeEmailBtn").addEventListener("click", function() {
+			        var emailForm = document.getElementById("emailForm2");
+			        if (emailForm.style.display === "none") {
+			            emailForm.style.display = "block"; // Hiển thị form
+			        } else {
+			            emailForm.style.display = "none"; // Ẩn form
+			        }
+			    });
+			</script>
+				
+			<!-- Bước 3 - Nhập email mới (chỉ hiển thị khi mã OTP đã được xác thực thành công) -->
+			   <div class="form-group" th:if="${message == 'Mã xác thực thành công. Bạn có thể nhập email mới.'}">
+			       <form action="/profile/confirm-new-email" method="post">
+			           <div class="mb-3">
+			               <label for="newEmail" class="form-label">Email mới:</label>
+			               <input type="email" id="newEmail" name="newEmail" class="form-control" placeholder="Nhập email mới" required>
+			               <button type="submit" class="btn btn-primary mt-2">Xác nhận email mới</button>
+			           </div>
+			       </form>
+			   </div>
+
+			   <!-- Hiển thị thông báo hoặc lỗi -->
+			   <div class="mt-3">
+			       <p class="text-success" th:if="${message}" th:text="${message}"></p>
+			       <p class="text-danger" th:if="${error}" th:text="${error}"></p>
+			   </div>
+			</div>
+			<!-- Nút mở modal Cập nhật thông tin -->
+				    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateInfoModal">
+				        Cập nhật thông tin
+				    </button>
+				    
+				    <!-- Nút mở modal Đổi mật khẩu -->
+				    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#changePasswordModal">
+				        Đổi mật khẩu
+				    </button>
+	    </div>
+		<div class="table-container">
+		    <h3>Món Ăn Được Mua Nhiều Nhất</h3>
+		    <table class="table table-striped">
+		        <thead>
+		            <tr>
+		                <th>Tên Món Ăn</th>
+		                <th>Tổng Số Lượng</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr th:each="item : ${top5MenuItems}">
+		                <td>
+		                    <a th:href="@{/product-details/{token}(token=${item.token})}" title="Xem chi tiết">
+		                        <span th:text="${item.name}"></span>
+		                    </a>
+		                </td>
+		                <td th:text="${item.totalQuantity}"></td>
+		            </tr>
+		        </tbody>
+		    </table>
+		</div>
+	</div>
+	   
+	<div class="container mt-4">
+	    <h3>Lịch Sử Tích Điểm</h3>
+	    <div class="table-responsive"> <!-- Thêm div này -->
+	        <table class="table table-bordered">
+	            <thead class="table-dark">
+	                <tr>
+	                    <th>Ngày Tích Điểm</th>
+	                    <th>Mã Đơn Hàng</th>
+	                    <th>Tổng Tiền Thanh Toán</th>
+	                    <th>Điểm Đã Sử Dụng</th>
+	                    <th>Điểm Tích Lũy Thêm</th>
+	                    <th>Hành động</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr th:each="history : ${pointsHistory}">
+	                    <td th:text="${history.date}"></td>
+	                    <td th:text="${history.orderCode}"></td>
+	                    <td th:text="${#numbers.formatDecimal(history.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+	                    <td th:text="${history.pointsUsed}"></td>
+	                    <td th:text="${history.rewardPoints}"></td>
+	                    <td>
+	                        <a th:href="'/my_order?modal=orderDetailsModal_' + ${history.orderCode}">Xem chi tiết đơn hàng</a>
+	                    </td>
+	                </tr>
+	            </tbody>
+	        </table>
+	    </div>
+	</div>
+
+	<!-- Modal Cập Nhật Thông Tin Cá Nhân -->
+	<div class="modal fade" id="updateInfoModal" tabindex="-1" aria-labelledby="updateInfoModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg"> <!-- Thêm class modal-lg ở đây -->
+	        <div class="modal-content">
+	            <!-- Modal Header -->
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="updateInfoModalLabel">Cập nhật thông tin cá nhân</h5>
+	                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+	            </div>
+
+	            <!-- Form Cập Nhật Thông Tin -->
+	            <form action="/profile/update" method="post">
+	                <div class="modal-body">
+	                    <!-- Dòng thông tin -->
+	                    <div class="row mb-3">
+	                        <div class="col-md-4">
+	                            <label for="name" class="form-label">Tên:</label>
+	                            <input type="text" id="name" name="name" class="form-control" th:value="${user.name}" placeholder="Nhập tên của bạn" required>
+	                        </div>
+	                        <div class="col-md-4">
+	                            <label for="phone" class="form-label">Số điện thoại:</label>
+	                            <input type="text" id="phone" name="phone" class="form-control" th:value="${user.phone}" placeholder="Nhập số điện thoại" required>
+	                            <small id="phoneError" class="text-danger"></small>
+	                        </div>
+
+	                    </div>
+	                    <!-- Dòng địa chỉ -->
+	                    <div class="row mb-3">
+	                        <div class="col-md-3">
+	                            <label for="city" class="form-label">Thành phố:</label>
+	                            <select class="form-control" id="city" name="city" required>
+	                                <option value="">Chọn thành phố</option>
+	                                <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+	                            </select>
+	                        </div>
+	                        <div class="col-md-3">
+	                            <label for="district" class="form-label">Quận/Huyện:</label>
+	                            <select class="form-control" id="district" name="district" required>
+	                                <option value="">Chọn quận/huyện</option>
+	                            </select>
+	                        </div>
+	                        <div class="col-md-3">
+	                            <label for="ward" class="form-label">Phường/Xã:</label>
+	                            <select class="form-control" id="ward" name="ward" required>
+	                                <option value="">Chọn phường/xã</option>
+	                            </select>
+	                        </div>
+							<div class="col-md-3">
+								<label for="street" class="form-label">Đường:</label>
+	                            <select class="form-control" id="street" name="street" required>
+	                                <option value="">Chọn đường</option>
+	                            </select>	                         						
+	                        </div>
+	                    </div>
+	                    <!-- Dòng đường -->
+	                    <div class="row mb-3">
+	                        <div class="col-md-12">
+								<label for="houseNumber" class="form-label">Số nhà:</label>
+	                            <input type="text" class="form-control" id="houseNumber" name="houseNumber" placeholder="Nhập số nhà" required>
+	                        </div>
+	                    </div>
+	                </div>
+
+	                <!-- Modal Footer -->
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+	                    <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+    <!-- Modal Đổi mật khẩu -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/profile/change-password" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="currentPassword">Mật khẩu hiện tại:</label>
+                            <input type="password" id="currentPassword" name="currentPassword" class="form-control">
+                        </div>
+
+						<div class="form-group">
+						    <small class="form-text text-muted"> <i>
+						        Mật khẩu mặc định khi đăng ký tài khoản bằng Gmail là "SSWA123".</i>
+						    </small>
+						</div>
+                        <div class="form-group">
+                            <label for="newPassword">Mật khẩu mới:</label>
+                            <input type="password" id="newPassword" name="newPassword" class="form-control">
+                        </div>
+						<small><i> <a href="/forgot-password" class="nav-link d-block mb-3 custom-link form-text">Bạn quên mật khẩu?</a></i> </small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<footer class="footer">
+	       <div class="container">
+	           <div class="row">
+	               <div class="col-md-4">
+	                   <h5 class="footer-logo">Sushi Wa</h5>
+	                   <p>Sushi và Lẩu Băng chuyền tại Tầng B1 GigaMall Tp.Thủ Đức</p>
+	               </div>
+	               <div class="col-md-4">
+	                   <h5>Bạn cần hỗ trợ</h5>
+	                   <p>
+	                       <strong>Hoteline: 097 480 2998</strong><br>
+	                       Địa chỉ: Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh<br>
+	                       Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+	                   </p>
+					   <div class="social-icons">
+					       <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook">
+					           <i class="fab fa-facebook-f"></i>
+					       </a>
+					       <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+					           <i class="fab fa-twitter"></i>
+					       </a>
+					       <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+					           <i class="fab fa-youtube"></i>
+					       </a>
+					       <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+					           <i class="fab fa-instagram"></i>
+					       </a>
+					   </div>
+					   <div class="payment-icons mt-3">
+					       <a href="https://visa.com" target="_blank" aria-label="Stripe">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+					       </a>
+					       <a href="https://www.mastercard.com" target="_blank" aria-label="mastercard">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+					       </a>
+					       <a href="https://www.stripe.com" target="_blank" aria-label="Visa">
+					           <img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe">
+					       </a>
+					       <a href="https://www.paypal.com" target="_blank" aria-label="MasterCard">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal">
+					       </a>
+					   </div>
+	               </div>
+	               <div class="col-md-2">
+	                   <h5>Hướng dẫn</h5>
+	                   <ul class="list-unstyled">
+	                       <li><a href="#">Cách đặt món</a></li>
+	                       <li><a href="#">Phương thức thanh toán</a></li>
+	                       <li><a href="#">Giao hàng tận nơi</a></li>
+	                       <li><a href="#">Chính sách đổi trả</a></li>
+	                       <li><a href="#">Câu hỏi thường gặp</a></li>
+	                   </ul>
+	               </div>
+	               <div class="col-md-2">
+	                   <h5>Hỗ trợ khách hàng</h5>
+	                   <ul class="list-unstyled">
+	                       <li><a href="#">Liên hệ chúng tôi</a></li>
+	                       <li><a href="#">Tư vấn thực đơn</a></li>
+	                       <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+	                       <li><a href="#">Chính sách bảo mật</a></li>
+	                       <li><a href="#">Điều khoản sử dụng</a></li>
+	                   </ul>
+	               </div>
+	               
+	           </div>
+	         
+	       </div>
+	</footer>
+	<script>
+	        window.addEventListener('load', function() {
+	            const signupContainer = document.getElementById('signupContainer');
+	            signupContainer.classList.add('show');
+	        });
+			<!-- JavaScript kiểm tra ràng buộc -->
+
+			document.getElementById("updateInfoModalLabel").addEventListener("input", function () {
+			    // Kiểm tra tên (cho phép dấu, in hoa hết hoặc chữ cái đầu viết hoa, ít nhất 2 từ)
+			    const nameInput = document.getElementById("name");
+			    const nameError = document.getElementById("nameError");
+			    const nameRegex = /^([\p{L}]+)(\s[\p{L}]+)+$/u; // Unicode hỗ trợ dấu
+
+			    if (nameInput.value.trim() === "") {
+			        nameError.textContent = "Tên không được để trống.";
+			    } else if (!nameRegex.test(nameInput.value)) {
+			        nameError.textContent = "Tên phải có ít nhất 2 từ, cho phép viết hoa và dấu.";
+			    } else {
+			        nameError.textContent = "";
+			    }
+				document.getElementById("username").addEventListener("blur", function () {
+				    const usernameInput = document.getElementById("username");
+				    const usernameError = document.getElementById("usernameError");
+				    const usernameRegex = /^[A-z0-9]{6,15}$/;
+				    const forbiddenWords = ["admin", "sushi", "quantrivien"];
+				    const username = usernameInput.value.trim().toLowerCase();
+
+				    if (username === "") {
+				        usernameError.textContent = "Tên đăng nhập không được để trống.";
+				    } else if (!usernameRegex.test(username)) {
+				        usernameError.textContent = "Tên đăng nhập phải có ít nhất 6 ký tự và tối đa 15 ký tự, không chứa khoảng trắng.";
+				    } else if (forbiddenWords.some(word => username.startsWith(word))) {
+				        usernameError.textContent = `Tên đăng nhập không hợp lệ.`;
+				    } else {
+				        usernameError.textContent = "";
+				    }
+				});
+			    // Kiểm tra mật khẩu (ít nhất 8 ký tự, chữ hoa, chữ thường, số, ký tự đặc biệt)
+			    const passwordInput = document.getElementById("password");
+			    const passwordError = document.getElementById("passwordError");
+			    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+			    if (passwordInput.value.trim() === "") {
+			        passwordError.textContent = "Mật khẩu không được để trống.";
+			    } else if (passwordInput.value.length < 8) {
+			        passwordError.textContent = "Mật khẩu phải có ít nhất 8 ký tự.";
+			    } else if (!/[A-Z]/.test(passwordInput.value)) {
+			        passwordError.textContent = "Mật khẩu phải có ít nhất 1 chữ cái viết hoa.";
+			    } else if (!/[a-z]/.test(passwordInput.value)) {
+			        passwordError.textContent = "Mật khẩu phải có ít nhất 1 chữ cái viết thường.";
+			    } else if (!/\d/.test(passwordInput.value)) {
+			        passwordError.textContent = "Mật khẩu phải có ít nhất 1 chữ số.";
+			    } else if (!/[@$!%*?&]/.test(passwordInput.value)) {
+			        passwordError.textContent = "Mật khẩu phải có ít nhất 1 ký tự đặc biệt (@$!%*?&).";
+			    } else {
+			        passwordError.textContent = "";
+			    }
+
+			    // Kiểm tra số điện thoại (10 số và đầu số cụ thể)
+			    const phoneInput = document.getElementById("phone");
+			    const phoneError = document.getElementById("phoneError");
+			    const phoneRegex = /^(070|076|077|078|079|089|090|093|081|082|083|084|085|088|091|094|052|056|058|092|059|099|087|032|033|034|035|036|037|038|039)\d{7}$/;
+
+			    if (phoneInput.value.trim() === "") {
+			        phoneError.textContent = "Số điện thoại không được để trống.";
+			    } else if (!/^\d{10}$/.test(phoneInput.value)) {
+			        phoneError.textContent = "Số điện thoại phải có đúng 10 số.";
+			    } else if (!phoneRegex.test(phoneInput.value)) {
+			        phoneError.textContent = "Số điện thoại phải bắt đầu bằng đầu số hợp lệ.";
+			    } else {
+			        phoneError.textContent = "";
+			    }
+			});
+			const districtsData = {
+			    "Hồ Chí Minh": ["Quận 1", "Quận 3", "Quận 5", "Quận 7", "Quận Bình Thạnh", "Quận Gò Vấp", "Thành phố Thủ Đức"]
+			};
+
+			const wardsData = {
+			    "Quận 1": ["Phường Bến Nghé", "Phường Bến Thành", "Phường Cầu Kho"],
+			    "Quận 3": ["Phường 1", "Phường 2", "Phường 3"],
+			    "Quận 5": ["Phường 4", "Phường 6", "Phường 10"],
+				"Thành phố Thủ Đức": ["Phường Hiệp Bình Chánh", "Phường Linh Tây", "Phường Linh Trung"]
+
+			};
+
+			const streetsData = {
+			    "Phường Bến Nghé": ["Đường Đồng Khởi", "Đường Lê Duẩn", "Đường Nguyễn Huệ"],
+			    "Phường 1": ["Đường Nguyễn Đình Chiểu", "Đường Lý Chính Thắng"],
+			    "Phường 4": ["Đường Trần Hưng Đạo", "Đường Hải Thượng Lãn Ông"],
+				"Phường Hiệp Bình Chánh": ["Đường Phạm Văn Đồng","Đường số 15", "Đường số 16", "Đường số 17", "Đường số 18","Đường số 19", "Đường số 20","Đường số 21", "Đường số 22"]
+			};
+
+			// DOM Elements
+			const citySelect = document.getElementById("city");
+			const districtSelect = document.getElementById("district");
+			const wardSelect = document.getElementById("ward");
+			const streetSelect = document.getElementById("street");
+
+			// Chọn Thành Phố → Hiển thị Quận
+			citySelect.addEventListener("change", function () {
+			    const selectedCity = citySelect.value;
+
+			    if (selectedCity) {
+			        districtSelect.innerHTML = `<option value="">Chọn quận/huyện</option>`;
+			        districtsData[selectedCity].forEach(district => {
+			            districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+			        });
+			        districtSelect.disabled = false;
+			    } else {
+			        resetSelect(districtSelect);
+			        resetSelect(wardSelect);
+			        resetSelect(streetSelect);
+			    }
+			});
+
+			// Chọn Quận → Hiển thị Phường
+			districtSelect.addEventListener("change", function () {
+			    const selectedDistrict = districtSelect.value;
+
+			    if (selectedDistrict) {
+			        wardSelect.innerHTML = `<option value="">Chọn phường/xã</option>`;
+			        wardsData[selectedDistrict].forEach(ward => {
+			            wardSelect.innerHTML += `<option value="${ward}">${ward}</option>`;
+			        });
+			        wardSelect.disabled = false;
+			    } else {
+			        resetSelect(wardSelect);
+			        resetSelect(streetSelect);
+			    }
+			});
+
+			// Chọn Phường → Hiển thị Đường
+			wardSelect.addEventListener("change", function () {
+			    const selectedWard = wardSelect.value;
+
+			    if (selectedWard) {
+			        streetSelect.innerHTML = `<option value="">Chọn đường</option>`;
+			        streetsData[selectedWard].forEach(street => {
+			            streetSelect.innerHTML += `<option value="${street}">${street}</option>`;
+			        });
+			        streetSelect.disabled = false;
+			    } else {
+			        resetSelect(streetSelect);
+			    }
+			});
+
+			// Reset Select
+			function resetSelect(selectElement) {
+			    selectElement.innerHTML = `<option value="">Chọn</option>`;
+			    selectElement.disabled = true;
+			}
+			document.addEventListener("DOMContentLoaded", () => {
+			    const togglePassword = document.querySelector("#togglePassword");
+			    const passwordField = document.querySelector("#password");
+		
+			    togglePassword.addEventListener("click", function () {
+			        // Toggle the type attribute
+			        const isPassword = passwordField.getAttribute("type") === "password";
+			        passwordField.setAttribute("type", isPassword ? "text" : "password");
+		
+			        // Toggle the eye icon and update the title
+			        this.classList.toggle("bi-eye");
+			        this.classList.toggle("bi-eye-slash");
+			        this.setAttribute("title", isPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu");
+			    });
+			});
+			function generateStrongPassword() {
+			    const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			    const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+			    const numbers = "0123456789";
+			    const specialChars = "@$!%*?&";
+			    const allChars = upperCase + lowerCase + numbers + specialChars;
+
+			    let password = "";
+
+			    // Đảm bảo ít nhất 1 ký tự từ mỗi nhóm
+			    password += upperCase[Math.floor(Math.random() * upperCase.length)];
+			    password += lowerCase[Math.floor(Math.random() * lowerCase.length)];
+			    password += numbers[Math.floor(Math.random() * numbers.length)];
+			    password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+			    // Bổ sung các ký tự còn lại
+			    for (let i = 4; i < 12; i++) { // Tổng cộng 12 ký tự
+			        password += allChars[Math.floor(Math.random() * allChars.length)];
+			    }
+
+			    // Xáo trộn các ký tự để không theo thứ tự cố định
+			    password = password.split("").sort(() => Math.random() - 0.5).join("");
+
+			    return password;
+			}
+			document.getElementById("generatePassword").addEventListener("click", function () {
+			    const passwordField = document.getElementById("password");
+			    const passwordError = document.getElementById("passwordError");
+
+			    const strongPassword = generateStrongPassword();
+			    passwordField.value = strongPassword;
+
+			    // Kiểm tra lại mật khẩu
+			    validatePassword(strongPassword, passwordError);
+			});
+
+			function validatePassword(password, errorField) {
+			    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+			    if (!passwordRegex.test(password)) {
+			        errorField.textContent = "Mật khẩu không đáp ứng yêu cầu.";
+			    } else {
+			        errorField.textContent = "";
+			    }
+			}
+			function verifyOTP() {
+			       // Lấy mã OTP từ input
+			       const otp = document.getElementById("verificationCode").value;
+
+			       // Gửi mã OTP đến máy chủ để xác minh (giả lập trong ví dụ này)
+			       const correctOTP = "123456"; // Thay bằng OTP thực tế từ máy chủ
+
+			       if (otp === correctOTP) {
+			           alert("Xác minh OTP thành công!");
+			           // Hiển thị form nhập email mới
+			           document.getElementById("newEmailForm").style.display = "block";
+			       } else {
+			           alert("Mã xác thực không đúng. Vui lòng thử lại.");
+			       }
+			   }
+	    </script>
+		<!-- Thêm jQuery (nếu cần thiết) và Bootstrap JS từ CDN -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

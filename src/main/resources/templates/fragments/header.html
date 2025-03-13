@@ -1,0 +1,105 @@
+<!-- src/main/resources/templates/fragments/header.html -->
+<div th:fragment="header">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-none d-sm-block">
+        <div class="container">
+            <a class="navbar-brand" href="http://localhost:8080/">
+                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" width="50px" alt="Logo Sushi">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Form Tìm kiếm -->
+            <form action="/search" method="get" id="voiceSearchForm">
+                <div class="input-group">
+                    <input type="text" name="query" id="voiceInput" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required >
+                    <button type="button" id="voiceSearchBtn" title="Tìm kiếm bằng giọng nói" class="btn btn-primary">🎙️</button>
+                </div>
+            </form>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/menu">Đặt món</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/promotions">Khuyến mãi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_order" th:if="${session.loggedInUser != null}">Đơn hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+					<li class="nav-item" th:if="${session.role == 'admin'}">
+					    <a class="nav-link" href="/admin">Trang Admin</a>
+					</li>
+					<li class="nav-item" th:if="${session.loggedInUser == null}">
+					    <a class="nav-link" href="/login">Đăng nhập</a>
+					</li>
+					<li class="nav-item dropdown" th:if="${session.loggedInUser != null}">
+					    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					        <i class="fas fa-user"></i> [[${session.loggedInUser}]]
+					    </a>
+					    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+					        <a class="dropdown-item" href="/profile">Thông tin cá nhân</a>
+					        <a class="dropdown-item" href="/user/vouchers">Ví voucher</a>
+					        <div class="dropdown-divider"></div>
+					        <a class="dropdown-item" href="/logout">Đăng xuất</a>
+					    </div>
+					</li>
+                </ul>
+				<li class="nav nav-item dropdown" th:if="${session.loggedInUser != null}">
+				    <a class="nav-link position-relative" id="notificationDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+				        <i class="fas fa-bell"></i> <!-- Biểu tượng chuông -->
+				        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+				            <span th:text="${unreadNotificationsCount}">0</span> <!-- Hiển thị số lượng thông báo chưa đọc -->
+				        </span>
+				    </a>
+				    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="max-height: 350px; overflow-y: auto;">
+				        <!-- Lặp qua tất cả thông báo và tạo thanh cuộn chỉ cho thông báo -->
+				        <div style="max-height: 250px; overflow-y: auto;">
+				            <li th:each="notification : ${notifications}">
+				                <div class="d-flex justify-content-between">
+				                    <!-- Thêm target="_blank" để mở liên kết trong cửa sổ mới -->
+				                    <a class="dropdown-item" th:href="${notification.link}" target="_blank">
+				                        <i class="fas fa-circle text-primary me-2" th:if="${!notification.read}"></i>
+				                        <span style="white-space: normal; word-wrap: break-word; word-break: break-word; width: 450px; display: inline-block;" th:text="'- ' +${notification.message}">Nội dung thông báo</span>
+				                    </a>
+				                    <!-- Biểu tượng ba chấm ở phía bên phải -->
+				                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton{{notification.id}}" data-bs-toggle="dropdown" aria-expanded="false">
+				                        <i class="fas fa-ellipsis-h"></i> <!-- Ba chấm -->
+				                    </button>
+				                    <!-- Dropdown menu cho ba chấm -->
+				                    <ul class="dropdown-menu" href="#" aria-labelledby="dropdownMenuButton{{notification.id}}">
+				                        <li>
+				                            <a class="dropdown-item" th:href="@{/notifications/markAsRead/{id}(id=${notification.id})}">Đánh dấu đã đọc</a>
+				                        </li>
+				                        <li>
+				                            <a class="dropdown-item" th:href="@{/notifications/delete/{id}(id=${notification.id})}">Xóa thông báo</a>
+				                        </li>
+				                        <li>
+				                            <a class="dropdown-item" th:href="@{/notifications/markAsUnread/{id}(id=${notification.id})}">Đánh dấu là chưa đọc</a>
+				                        </li>
+				                    </ul>
+				                </div>
+				            </li>
+				        </div>
+				        <li><hr class="dropdown-divider"></li>
+				        <!-- Mục "Xem tất cả thông báo" nằm tách biệt ở dưới cùng và không nằm trong thanh cuộn -->
+				        <li>
+				            <a class="dropdown-item text-center" href="/notifications">Xem tất cả thông báo</a>
+				        </li>
+				    </ul>
+				</li>
+                <!-- Giỏ hàng -->
+                <div class="nav-item">
+                    <a href="/cart">
+                        <button class="btn btn-outline-primary position-relative">
+                            <i class="fas fa-shopping-cart"></i> <!-- Biểu tượng giỏ hàng -->
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <span th:text="${cartItemCount}">0</span>
+                            </span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+	
+</div>
+
+

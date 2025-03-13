@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Combo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+		<!-- Nút quay lại -->
+		<div th:if="${refererPage != null}" class="mb-4">
+		    <a th:href="${refererPage}" class="btn btn-secondary">Quay lại</a>
+		</div>
+
+        <h1>Chỉnh sửa Combo</h1>
+        <form action="#" th:action="@{/admin/combos/edit/{id}(id=${combo.comboId})}" method="post">
+			<input type="hidden" name="refererPage" th:value="${refererPage}" />
+
+            <div class="mb-3">
+                <label for="comboName" class="form-label">Tên Combo</label>
+                <input type="text" class="form-control" id="comboName" name="comboName" th:value="${combo.comboName}" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Giá</label>
+                <input type="number" class="form-control" id="price" name="price" th:value="${combo.price}" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Mô tả</label>
+                <textarea class="form-control" id="description" name="description" rows="3" th:text="${combo.description}" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">Hình ảnh (URL)</label>
+                <input type="text" class="form-control" id="imageUrl" name="imageUrl" th:value="${combo.imageUrl}">
+            </div>
+			<div class="mb-3">
+			    <label class="form-label">Chọn món ăn</label>
+			    <div th:each="menuItem : ${menuItems}">
+			        <label>
+			            <input type="checkbox" th:id="'menuItem-' + ${menuItem.itemId}" th:value="${menuItem.itemId}" 
+			                   th:checked="${#lists.contains(combo.menuItems, menuItem)}" name="menuItemIds" />
+			            <span th:text="${menuItem.name}"></span>
+			        </label>
+			    </div>
+			</div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a href="/admin/combos" class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

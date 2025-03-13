@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Combo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Danh sách Combo</h1>
+
+        <a href="/admin/combos/create" class="btn btn-primary mb-4">Tạo Combo mới</a>
+		<div th:if="${successMessage != null}" class="alert alert-success" th:utext="${successMessage}"></div>
+		<div th:if="${errorMessage != null}" class="alert alert-danger" th:utext="${errorMessage}"></div>
+	
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên Combo</th>
+                    <th>Giá</th>
+                    <th>Mô tả</th>
+                    <th>Hình ảnh</th> <!-- Thêm cột Hình ảnh -->
+                    <th>Món ăn</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="combo : ${combos}">
+                    <td th:text="${combo.comboId}"></td>
+                    <td th:text="${combo.comboName}"></td>
+                    <td th:text="${combo.price}"></td>
+                    <td th:text="${combo.description}"></td>
+                    <!-- Hiển thị hình ảnh combo nếu có -->
+                    <td>
+                        <img th:src="${combo.imageUrl}" alt="Hình ảnh Combo" style="max-width: 100px; height: auto;">
+                    </td>
+                    <td>
+                        <ul>
+                            <th:block th:each="menuItem : ${combo.menuItems}">
+                                <li>
+                                    <!-- Kiểm tra nếu menuItem không bị null -->
+                                    <th:block th:if="${menuItem != null}">
+                                        <!-- Kiểm tra nếu imageUrl không bị null -->
+                                        <span th:if="${menuItem.imageUrl != null}">
+                                            <img th:src="${menuItem.imageUrl}" alt="Image of menu item" width="50px" />
+                                        </span>
+                                        <span th:text="${menuItem.name}">Tên món ăn</span>
+                                    </th:block>
+                                </li>
+                            </th:block>
+                        </ul>
+                    </td>
+                    <td>
+                        <a href="#" th:href="@{/admin/combos/edit/{id}(id=${combo.comboId})}" class="btn btn-warning">Chỉnh sửa</a>
+						<a href="#" 
+						   th:href="@{/admin/combos/delete/{id}(id=${combo.comboId})}" 
+						   class="btn btn-danger" 
+						   onclick="return confirm('Bạn có chắc chắn muốn xóa combo này?');">Xóa</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0-alpha1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

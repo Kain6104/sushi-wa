@@ -1,0 +1,737 @@
+<!DOCTYPE html> 
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Sushi Wa</title>
+	<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<script src="/js/chatbot.js"></script>
+
+	<!-- AOS CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+	<link href="/index.css" rel="stylesheet">
+	<link href="/menu.css" rel="stylesheet">
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<style>
+		/* Ẩn các món ăn ngoài 2 món đầu */
+		 .menu-item.hidden {
+		     display: none;
+		 }
+		.item-card .card {
+		    border: none;
+		    border-radius: 12px;
+		    background-color: #f8f8f8;
+		    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+		    transition: transform 0.3s ease-in-out;
+		}
+		.item-card .card:hover {
+		    transform: translateY(-10px);
+		}
+
+		.item-card .card-img-top {
+		    border-radius: 12px;
+		    object-fit: cover;
+		    height: 300px;
+		    width: 100%;
+		}
+
+		.item-card .card-body {
+		    text-align: center;
+		}
+
+		.item-card .card-title {
+		    font-size: 18px;
+		    font-weight: bold;
+		    margin-bottom: 10px;
+		}
+
+		.item-card .card-text {
+		    font-size: 14px;
+		    color: #777;
+		    margin-bottom: 10px;
+		}
+
+		.item-card .price.discounted {
+		    text-decoration: none;
+		    color: #28a745; /* Màu xanh cho giá đã giảm */
+		}
+
+		.add-to-cart-btn {
+		    background-color: #f39c12;
+		    color: white;
+		    border-radius: 8px;
+		    font-weight: bold;
+		}
+
+		.add-to-cart-btn:hover {
+		    background-color: #e67e22;
+		}
+		.item-card {
+		    opacity: 0;
+		    transform: translateY(20px);
+		    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+		}
+
+		.item-card.visible {
+		    opacity: 1;
+		    transform: translateY(0);
+		}
+		@media (max-width: 768px) {
+		    /* Hiển thị 2 món trên một dòng */
+		    .item-card {
+		        flex: 0 0 50%;
+		        max-width: 50%;
+		        padding: 5px;
+				height: 100%; /* Đảm bảo tất cả card có chiều cao bằng nhau */
+		    }
+
+		    /* Đảm bảo tất cả các thẻ có chiều cao bằng nhau */
+		    .card {
+		        display: flex;
+		        flex-direction: column;
+		        height: 100%; /* Đảm bảo tất cả card có chiều cao bằng nhau */
+		    }
+
+		    .card-body {
+		        flex-grow: 1; /* Đảm bảo nội dung dàn đều trong card */
+		        display: flex;
+				flex-direction: column;
+		    }
+
+		    /* Giảm kích thước hình ảnh */
+		    .item-card img {  
+		        max-height: 100px; /* Giảm chiều cao ảnh */
+		        object-fit: cover;
+		    }
+
+		    .card-title {
+		        font-size: 0.75rem !important; /* Giảm kích thước chữ */
+		        line-height: 1.2 !important; /* Giảm chiều cao dòng */
+		    }
+
+		    .card-text, .text-danger, .price, .sold-quantity {
+		        font-size: 0.5rem !important; /* Giảm kích thước chữ */
+		    }
+
+		    /* Giảm kích thước nút bấm */
+		    .add-to-cart-btn {
+		        font-size: 0.75rem;
+		        padding: 4px 6px;
+		        width: 100%; /* Nút bấm dài ra để căn đối xứng */
+		    }
+		}
+
+		@media (max-width: 480px) {
+		    .item-card {
+		        flex: 0 0 50%;
+		        max-width: 50%;
+		    }
+
+		    .card-title {
+		        font-size: 0.8rem; /* Giảm thêm nữa trên màn hình nhỏ */
+		    }
+
+		    .card-text, .text-danger, .price, .sold-quantity {
+		        font-size: 0.7rem;
+		    }
+
+		    .add-to-cart-btn {
+		        font-size: 0.7rem;
+		        padding: 3px 5px;
+		    }
+		}
+
+	</style>
+</head>
+<body onload="window.scrollTo(0, localStorage.getItem('scrollPosition') || 0)">
+	<!-- Navbar -->
+	<th:block th:replace="fragments/header :: header"></th:block>
+	
+	<!-- Form Tìm kiếm -->
+		<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+		    <form action="/search" method="get">
+		        <div class="input-group">
+					<button type="button" class="btn btn-outline-secondary toggle-category" onclick="toggleCategory()" style="margin-left: 5px;">
+					          ☰
+				    </button>
+		            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+		                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+		            </a>
+		            <!-- Input search -->
+		            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+		            <!-- Biểu tượng giỏ hàng với số lượng món -->
+					<a href="/cart" class="input-group-text">
+		                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+		                    <i class="fas fa-shopping-cart"></i>
+		                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+		                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+		                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+		                    </span>
+		                </button>
+		            </a>
+		        </div>
+		    </form>
+		</div>
+		
+		<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+	    <div class="container">
+	        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'index')} ? 'active'">
+	                <a class="nav-link" href="/index">
+	                    <i class="fas fa-home"></i><br>Trang chủ
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'menu')} ? 'active'">
+	                <a class="nav-link" href="/menu">
+	                    <i class="fas fa-utensils"></i><br>Đặt Món
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'promotions')} ? 'active'">
+	                <a class="nav-link" href="/promotions">
+	                    <i class="fas fa-tag"></i><br>Khuyến mãi
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+	                th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/my_order">
+	                    <i class="fas fa-box"></i><br>Đơn hàng
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'customer')} ? 'active'"
+	                th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/customer">
+	                    <i class="fas fa-user"></i><br>[[${session.loggedInUser}]]
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'login')} ? 'active'"
+	                th:if="${session.loggedInUser == null}">
+	                <a class="nav-link" href="/login">
+	                    <i class="fas fa-user"></i><br>Đăng nhập
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</nav>
+	<!-- Biểu tượng mũi tên cuộn -->
+	<div id="scrollArrow" class="d-block d-sm-none" onclick="scrollToTopOrBottom()">
+	    <i class="fas fa-arrow-up"></i> <!-- Icon mũi tên -->
+	</div>
+	<!--<div class="container my-5">
+	    <h2 class="text-center mb-4">Món Ngon Nên Thử</h2>
+	    <div class="row">
+	        <th:block th:each="item : ${menuItems}">
+	            <div class="col-md-4">
+	                <div class="card">
+	                    <img th:src="${item.imageUrl}" class="card-img-top" th:alt="'Image of ' + ${item.name}">
+	                    <div class="card-body">
+	                        <h5 class="card-title" th:text="${item.name}">Tên món</h5>
+	                        <p class="card-text" th:text="${item.description}">Mô tả món ăn</p>
+	                        <p class="price" th:text="${#numbers.formatDecimal(item.price, 0, 0)}">Giá</p>
+	                        
+							<form action="/add-to-cart" method="post" onsubmit="localStorage.setItem('scrollPosition', window.scrollY)">
+					            <input type="hidden" name="id" th:value="${item.getItemId()}" />
+					            <button type="submit" class="btn add-to-cart-btn mt-3">Thêm vào giỏ hàng</button>
+							</form>	
+	                    </div>
+	                </div>
+	            </div>
+	        </th:block>
+	    </div>
+	</div>-->
+	<div class="container my-5">
+	    <h2 class="text-center mb-4"><strong>THỰC ĐƠN</strong></h2>
+
+		<!-- Ô tìm kiếm -->
+		<div class="mb-4">
+		    <div class="row g-2">
+		        
+		        <!-- Thanh tìm kiếm -->
+		        <div class="col-lg-4 col-md-6 d-flex align-items-center gap-2">
+		            <label for="searchInput" class="form-label mb-0">Tìm kiếm món ăn:</label>
+		            <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên món ăn để tìm">
+		        </div>
+
+		        <!-- Tùy chọn sắp xếp -->
+		        <div class="col-lg-4 col-md-6 d-flex align-items-center gap-2">
+		            <label for="sortSelect" class="form-label mb-0">Sắp xếp:</label>
+		            <select id="sortSelect" class="form-select" onchange="sortItems()">
+						<option value="">Chưa chọn</option>
+		                <option value="name">Tên</option>
+		                <option value="price">Giá tiền</option>
+		            </select>
+
+		            <!-- Dropdown cho thứ tự sắp xếp theo giá tiền -->
+		            <select id="priceOrderSelect" class="form-select d-none" onchange="sortItems()">
+		                <option value="asc">Từ thấp đến cao</option>
+		                <option value="desc">Từ cao đến thấp</option>
+		            </select>
+		        </div>
+		        <!-- Bộ lọc khoảng giá -->
+		        <div class="col-lg-4 col-md-6 d-flex align-items-center gap-2">
+		            <label for="minPrice" class="form-label mb-0">Giá:</label>
+		            <input type="number" id="minPrice" class="form-control" placeholder="Giá thấp nhất" oninput="filterByPrice()">
+		            <input type="number" id="maxPrice" class="form-control" placeholder="Giá cao nhất" oninput="filterByPrice()">
+		        </div>
+		        
+		    </div>
+		</div>
+
+		<!-- Thanh điều hướng danh mục -->
+		<div class="category-navigation text-center mb-4">
+		    <button class="btn category-btn active" data-category="all" onclick="filterItems(this)">Tất cả</button>
+		    <th:block th:each="category : ${categories}">
+				<button class="btn category-btn" 
+				        th:text="${category} + ' (' + ${categoryCounts.get(category) != null ? categoryCounts.get(category) : 0} + ')'" 
+				        th:attr="data-category=${category}" onclick="filterItems(this)">
+				</button>
+		    </th:block>
+		</div>
+
+		<!-- Thanh điều hướng danh mục trên mobile -->
+		<div class="category-navigation d-block d-sm-none" id="categoryMenu">
+		    <div class="category-header">
+		        <span class="category-title">Danh mục</span>
+		        <button class="btn-close" onclick="toggleCategory()">×</button>
+		    </div>
+		    <div class="category-content">
+		        <button class="btn category-btn active" data-category="all" onclick="filterItems(this)">Tất cả</button>
+		        <th:block th:each="category : ${categories}">
+					<button class="btn category-btn" 
+					        th:text="${category} + ' (' + ${categoryCounts.get(category) != null ? categoryCounts.get(category) : 0} + ')'" 
+					        th:attr="data-category=${category}" onclick="filterItems(this)">
+					</button>
+		        </th:block>
+		    </div>
+		</div>
+		
+	    <!-- Hiển thị các món ăn -->
+		<div class="row" id="menuItemsContainer">
+		    <th:block th:each="entry : ${categorizedItems}">
+		        <div class="category-section" th:attr="data-category=${entry.key}">
+		            <h3 th:text="${entry.key}" class="category-title">Category</h3>
+		            <div class="row">
+		                <th:block th:each="item : ${entry.value}">
+		                    <div class="col-md-3 item-card" th:attr="data-category=${entry.key}">
+		                        <div class="card">
+		                            <!-- Hình ảnh món ăn -->
+		                           <a title="Xem chi tiết" th:href="@{/product-details/{token}(token=${item.token})}" class="nav-link">  <img th:src="${item.imageUrl}" class="card-img-top" th:alt="'Image of ' + ${item.name}" 
+		                                 data-toggle="modal" data-target="#itemModal" th:attr="data-item-id=${item.getItemId()}">
+										 </a>
+										 <div class="card-body">
+										     <a th:href="@{/product-details/{token}(token=${item.token})}" title="Xem chi tiết" class="nav-link">
+										         <h5 class="card-title" th:text="${item.name}">Tên món</h5> 
+
+										     </a>
+										     <p class="card-text" th:text="${item.description}">Mô tả món ăn</p>
+											 <p class="sold-quantity text-muted">Đã bán: <span th:text="${item.soldQuantity}"></span></p>
+										     <!-- <p class="text-danger" th:text="'Khuyến mãi: ' + ${item.promotion}">Khuyến mãi</p>  -->   
+											 <p class="price" th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'NONE')} + 'đ'">Giá</p>
+
+										     <!-- Thêm số lượng đã bán -->
+										     <form action="/add-to-cart" method="post" onsubmit="localStorage.setItem('scrollPosition', window.scrollY)">
+										         <input type="hidden" name="id" th:value="${item.getItemId()}" />
+										         <button type="submit" class="btn add-to-cart-btn mt-3">Thêm vào giỏ hàng</button>
+										     </form>    
+										 </div>
+		                        </div>
+		                    </div>
+		                </th:block>
+		            </div>
+		        </div>
+		    </th:block>
+	    </div>
+		
+		<!-- Hiển thị các Combo -->
+				<div class="col-12">
+				    <h3 class="category-title">Combo</h3>
+				    <div class="row">
+				        <th:block th:each="combo : ${combos}">
+				            <div class="col-md-3 item-card">
+				                <div class="card">
+				                    <!-- Hình ảnh Combo -->
+									<a th:href="@{/combo-details/{token}(token=${combo.token})}">
+									    <img th:src="${combo.imageUrl}" class="card-img-top" th:alt="'Image of ' + ${combo.comboName}">
+									</a>
+
+				                    <div class="card-body">
+				                        <h5 class="card-title" th:text="${combo.comboName}">Tên Combo</h5>
+				                        <p class="card-text" th:text="${combo.description}">Mô tả combo</p>
+				                        <p class="price" th:text="${#numbers.formatDecimal(combo.price, 0, 0)}">Giá combo</p>
+
+				                        <!-- Hiển thị danh sách món ăn trong combo 
+				                        <div>
+				                            <h6>Món ăn trong Combo:</h6>
+				                            <ul style="list-style-type: none; padding: 0;">
+				                                <th:block th:each="menuItem, iterStat : ${combo.menuItems}">
+				                                    <th:block th:if="${iterStat.index < 2}">
+				                                        <li class="menu-item">
+				                                            <div>
+				                                                <strong th:text="${menuItem.name}"></strong> - 
+				                                                <span th:text="${menuItem.price}"></span>
+				                                                <td>
+				                                                    <img th:src="${menuItem.imageUrl}" alt="Product Image" style="width: 50px;">
+				                                                </td>
+				                                            </div>
+				                                        </li>
+				                                    </th:block>
+
+				                                    <th:block th:if="${iterStat.index >= 2}">
+				                                        <li class="menu-item hidden">
+				                                            <div>
+				                                                <strong th:text="${menuItem.name}"></strong> - 
+				                                                <span th:text="${menuItem.price}"></span>
+				                                                <td>
+				                                                    <img th:src="${menuItem.imageUrl}" alt="Product Image" style="width: 50px;">
+				                                                </td>
+				                                            </div>
+				                                        </li>
+				                                    </th:block>
+				                                </th:block>
+				                            </ul>
+
+				                            <th:block th:if="${#lists.size(combo.menuItems) > 2}">
+				                                <a href="javascript:void(0);" class="view-more" onclick="toggleMenuItems(this)">Xem thêm</a>
+				                            </th:block>
+				                        </div>
+										-->
+				                        <form action="/add-combo-to-cart" method="post">
+				                            <input type="hidden" name="id" th:value="${combo.comboId}" />
+				                            <button type="submit" class="btn add-to-cart-btn mt-3">Thêm vào giỏ hàng</button>
+				                        </form>
+				                    </div>
+				                </div>
+				            </div>
+				        </th:block>
+				    </div>
+				</div>
+	<!-- Modal -->
+<!-- <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="itemModalLabel">Thông tin món ăn</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                Hình ảnh món ăn 
+	                <img id="modalItemImage" class="img-fluid mb-3" src="" alt="Món ăn" />
+	                <h5 id="modalItemName">Tên món</h5>
+	                <p id="modalItemDescription">Mô tả món ăn</p>
+	                <p id="modalItemPromotion" class="text-danger">Khuyến mãi: </p>
+	                <p id="modalItemIngredients" class="text-info">Thành phần: </p>
+	                <p id="modalItemPrice">Giá: </p>
+	                <p id="modalItemAvgRating" class="text-danger">Đánh giá trung bình: </p>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>-->
+	</div>
+
+	<footer class="footer">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-md-4">
+	                <h5 class="footer-logo">Sushi Wa - Sushi và Lẩu Băng chuyền</h5>
+					<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7867190715383!2d106.71906057480564!3d10.827627489324223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175291a441368eb%3A0x7a1dd7b554da4946!2sSushi%20Wa!5e0!3m2!1svi!2s!4v1728326309222!5m2!1svi!2s"  style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+	            </div>
+	            <div class="cuoicung col-md-4">
+	                <h5>Bạn cần hỗ trợ</h5>
+	                <p>
+	                    <strong>Hoteline: 097 480 2998</strong><br>
+
+	                    Địa chỉ:<a class="btn-reservation" href="https://maps.google.com/maps/dir//Sushi+Wa+TTTM+Giga+Mall,+240+%C4%90.+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng+Hi%E1%BB%87p+B%C3%ACnh+Ch%C3%A1nh+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh/@10.8276275,106.7216355,16z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3175291a441368eb:0x7a1dd7b554da4946" target="_blank">Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh</a><br>
+	                    Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+	                </p>
+	                <div class="social-icons">
+	                    <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook">
+	                        <i class="fab fa-facebook-f"></i>
+	                    </a>
+	                    <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+	                        <i class="fab fa-twitter"></i>
+	                    </a>
+	                    <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+	                        <i class="fab fa-youtube"></i>
+	                    </a>
+	                    <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+	                        <i class="fab fa-instagram"></i>
+	                    </a>
+	                </div>
+	                <div class="payment-icons mt-3">
+	                    <a href="https://visa.com" target="_blank" aria-label="Visa">
+	                        <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+	                    </a>
+	                    <a href="https://www.mastercard.com" target="_blank" aria-label="Mastercard">
+	                        <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+	                    </a>
+	                    <a href="https://www.stripe.com" target="_blank" aria-label="Stripe">
+	                        <img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe">
+	                    </a>
+	                    <a href="https://www.paypal.com" target="_blank" aria-label="Paypal">
+	                        <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal">
+	                    </a>
+	                </div>
+	            </div>
+	            <div class="col-md-2">
+	                <h5>Hướng dẫn</h5>
+	                <ul class="list-unstyled">
+	                    <li><a href="/promotion/58d05722-ab2a-4744-a3f5-b19bdc41fc9f">Cách đặt món</a></li>
+	                    <li><a href="#">Phương thức thanh toán</a></li>
+	                    <li><a href="#">Giao hàng tận nơi</a></li>
+	                    <li><a href="#">Chính sách đổi trả</a></li>
+	                    <li><a href="#">Câu hỏi thường gặp</a></li>
+	                </ul>
+	            </div>
+	            <div class="col-md-2">
+	                <h5>Hỗ trợ khách hàng</h5>
+	                <ul class="list-unstyled">
+	                    <li><a href="#">Liên hệ chúng tôi</a></li>
+	                    <li><a href="#">Tư vấn thực đơn</a></li>
+	                    <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+	                    <li><a href="#">Chính sách bảo mật</a></li>
+	                    <li><a href="#">Điều khoản sử dụng</a></li>
+	                </ul>
+	            </div>
+				<div class="cuoicung col-12 mt-3 mb-3 text-center text-secondary">
+					<i>
+					Bản quyền thuộc &copy;<script>document.write(new Date().getFullYear());</script> Sushi Wa.</i>
+				</div>
+	        </div>
+	    </div>
+	</footer>
+	<div id="toastNotification" style="display: none; position: fixed; bottom: 60px; right: 20px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px 20px; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+	    <span id="toastMessage"></span>
+		<span id="successMessage" th:text="${successMessage}" style="display: none;"></span>
+	    <span id="closeToast" style="margin-left: 10px; cursor: pointer; font-weight: bold;">&times;</span>
+	</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script>
+		function filterItems(button) { 
+		    const selectedCategory = button.getAttribute('data-category');
+		    const sections = document.querySelectorAll('.category-section');
+		    const buttons = document.querySelectorAll('.category-btn');
+
+		    // Loại bỏ lớp 'active' khỏi tất cả các nút
+		    buttons.forEach(btn => btn.classList.remove('active'));
+
+		    // Đặt lớp 'active' cho nút được chọn
+		    button.classList.add('active');
+
+		    // Hiển thị hoặc ẩn các danh mục
+		    sections.forEach(section => {
+		        if (selectedCategory === 'all' || section.getAttribute('data-category') === selectedCategory) {
+		            section.style.display = 'block';
+		        } else {
+		            section.style.display = 'none';
+		        }
+		    });
+		}
+
+		// Tự động chọn "Tất cả" khi trang load
+		window.addEventListener('load', () => {
+		    const allButton = document.querySelector('.category-btn[data-category="all"]');
+		    if (allButton) {
+		        filterItems(allButton);
+		    }
+		});
+		// Hàm loại bỏ dấu tiếng Việt
+		function removeVietnameseTones(str) {
+		    return str
+		        .normalize("NFD") // Tách ký tự và dấu
+		        .replace(/[\u0300-\u036f]/g, "") // Xóa dấu
+		        .replace(/đ/g, "d") // Thay đ thành d
+		        .replace(/Đ/g, "D"); // Thay Đ thành D
+		}
+
+		// Tìm kiếm
+		document.getElementById('searchInput').addEventListener('input', function() {
+		    const searchQuery = removeVietnameseTones(this.value.toLowerCase()); // Chuyển đổi chuỗi tìm kiếm thành chữ thường và loại bỏ dấu
+		    const items = document.querySelectorAll('.item-card'); // Lấy tất cả các món ăn
+
+		    items.forEach(item => {
+		        const itemName = removeVietnameseTones(item.querySelector('.card-title').innerText.toLowerCase()); // Loại bỏ dấu trong tên món ăn
+		        const itemDescription = removeVietnameseTones(item.querySelector('.card-text').innerText.toLowerCase()); // Loại bỏ dấu trong mô tả món ăn
+
+		        // Tách chuỗi tìm kiếm thành các từ khóa riêng biệt
+		        const searchWords = searchQuery.split(' ');
+
+		        // Kiểm tra xem từng từ khóa có xuất hiện trong tên món hoặc mô tả món không
+		        let matchFound = searchWords.every(word => itemName.includes(word) || itemDescription.includes(word));
+
+		        // Nếu tất cả từ khóa tìm kiếm có trong tên hoặc mô tả món, hiển thị món ăn
+		        if (matchFound) {
+		            item.style.display = 'block'; // Hiển thị món
+		        } else {
+		            item.style.display = 'none'; // Ẩn món
+		        }
+		    });
+		});
+
+		// Sắp xếp món ăn dựa trên tùy chọn của người dùng
+		function sortItems() {
+		    const sortBy = document.getElementById('sortSelect').value;
+		    const priceOrder = document.getElementById('priceOrderSelect').value;
+		    const itemsContainer = document.getElementById('menuItemsContainer');
+		    const itemsArray = Array.from(itemsContainer.getElementsByClassName('item-card'));
+
+		    // Hiển thị hoặc ẩn dropdown thứ tự khi chọn sắp xếp theo giá tiền
+		    if (sortBy === 'price') {
+		        document.getElementById('priceOrderSelect').classList.remove('d-none');
+		    } else {
+		        document.getElementById('priceOrderSelect').classList.add('d-none');
+		    }
+
+		    itemsArray.sort((a, b) => {
+		        switch (sortBy) {
+		            case 'name':
+		                return a.querySelector('.card-title').innerText.localeCompare(b.querySelector('.card-title').innerText);
+		            case 'price':
+		                const priceA = parseInt(a.querySelector('.price').innerText);
+		                const priceB = parseInt(b.querySelector('.price').innerText);
+		                return priceOrder === 'asc' ? priceA - priceB : priceB - priceA;
+		            case 'rating':
+		                return parseFloat(b.getAttribute('data-rating')) - parseFloat(a.getAttribute('data-rating'));
+		            default:
+		                return 0;
+		        }
+		    });
+
+		    // Thêm các mục đã sắp xếp vào `itemsContainer`
+		    itemsArray.forEach(item => itemsContainer.appendChild(item));
+		}
+
+		// Lọc các món ăn dựa trên khoảng giá
+		function filterByPrice() {
+		    const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+		    const maxPrice = parseInt(document.getElementById('maxPrice').value) || Infinity;
+		    const items = document.querySelectorAll('.item-card');
+
+		    items.forEach(item => {
+		        const price = parseInt(item.querySelector('.price').innerText);
+		        if (price >= minPrice && price <= maxPrice) {
+		            item.style.display = 'block';
+		        } else {
+		            item.style.display = 'none';
+		        }
+		    });
+		}
+		document.addEventListener("DOMContentLoaded", function () {
+		        const items = document.querySelectorAll(".item-card");
+
+		        const observer = new IntersectionObserver((entries) => {
+		            entries.forEach((entry) => {
+		                if (entry.isIntersecting) {
+		                    entry.target.classList.add("visible");
+		                }
+		            });
+		        }, {
+		            threshold: 0.1, // Phần tử xuất hiện ít nhất 10% trên màn hình
+		        });
+
+		        items.forEach((item) => observer.observe(item));
+		    });
+			// Mở modal và hiển thị chi tiết món ăn
+			document.querySelectorAll('.card-img-top').forEach(item => {
+			    item.addEventListener('click', function(event) {
+			        const itemId = event.target.getAttribute('data-item-id');
+			        const itemName = event.target.closest('.card').querySelector('.card-title').textContent;
+			        const itemDescription = event.target.closest('.card').querySelector('.card-text').textContent;
+			        const itemPromotion = event.target.closest('.card').querySelector('.text-danger').textContent;
+			        const itemIngredients = event.target.closest('.card').querySelector('.text-danger').textContent;
+			        const itemPrice = event.target.closest('.card').querySelector('.price').textContent;
+			        const itemAvgRating = event.target.closest('.card').querySelector('.text-danger').textContent;
+			        const itemImageUrl = event.target.getAttribute('src');
+
+			        // Cập nhật modal với thông tin món ăn
+			        document.getElementById('modalItemImage').setAttribute('src', itemImageUrl);
+			        document.getElementById('modalItemName').textContent = itemName;
+			        document.getElementById('modalItemDescription').textContent = itemDescription;
+			        document.getElementById('modalItemPromotion').textContent = itemPromotion;
+			        document.getElementById('modalItemIngredients').textContent = "Thành phần: " + itemIngredients;
+			        document.getElementById('modalItemPrice').textContent = "Giá: " + itemPrice;
+			        document.getElementById('modalItemAvgRating').textContent = "Đánh giá: " + itemAvgRating;
+			    });
+			});
+
+			   let arrowIcon = document.querySelector('#scrollArrow i');
+			   scrollArrow.style.marginBottom = '40px'; // Điều chỉnh giá trị margin-bottom để đẩy mũi tên lên
+
+			   function scrollToTopOrBottom() {
+			       if (window.scrollY > 0) {
+			           window.scrollTo({ top: 0, behavior: 'smooth' });
+			       } else {
+			           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+			       }
+			   }
+
+			   window.addEventListener('scroll', () => {
+			       if (window.scrollY > 100) {
+			           arrowIcon.classList.remove('fa-arrow-down');
+			           arrowIcon.classList.add('fa-arrow-up');
+			       } else {
+			           arrowIcon.classList.remove('fa-arrow-up');
+			           arrowIcon.classList.add('fa-arrow-down');
+			       }
+			   });
+			   function toggleCategory() {
+			       const menu = document.getElementById('categoryMenu');
+			       menu.classList.toggle('show');
+			   }
+
+			   
+	   
+	   function toggleMenuItems(link) {
+	          // Tìm tất cả các món ăn ẩn trong combo
+	          var hiddenItems = link.closest('.card-body').querySelectorAll('.menu-item.hidden');
+	          
+	          // Nếu tất cả món ăn ẩn đang được ẩn, hiển thị chúng
+	          var isHidden = hiddenItems[0].style.display === 'none';
+	          
+	          hiddenItems.forEach(function(item) {
+	              item.style.display = isHidden ? 'block' : 'none';
+	          });
+
+	          // Thay đổi nội dung của liên kết "Xem thêm"
+	          if (isHidden) {
+	              link.innerText = 'Ẩn bớt';
+	          } else {
+	              link.innerText = 'Xem thêm';
+	          }
+	      }
+		  //thông báo thêm sp vào giỏ hàng
+		  window.onload = function () {
+  		      // Lấy thông báo từ thẻ HTML (được Thymeleaf thêm vào nếu có)
+  		      const successMessage = document.querySelector("#successMessage")?.textContent.trim();
+
+  		      // Nếu có thông báo, hiển thị thông báo nổi
+  		      if (successMessage && successMessage.length > 0) {
+  		          const toastNotification = document.getElementById("toastNotification");
+  		          const toastMessage = document.getElementById("toastMessage");
+
+  		          toastMessage.textContent = successMessage; // Gán nội dung thông báo
+  		          toastNotification.style.display = "block"; // Hiển thị thông báo
+
+  		          // Tự động ẩn thông báo sau 3 giây
+  		          setTimeout(() => {
+  		              toastNotification.style.display = "none";
+  		          }, 3000);
+
+  		          // Cho phép người dùng đóng thông báo bằng cách nhấn "×"
+  		          document.getElementById("closeToast").onclick = function () {
+  		              toastNotification.style.display = "none";
+  		          };
+  		      }
+  		  };
+	   </script>
+</body>
+</html>

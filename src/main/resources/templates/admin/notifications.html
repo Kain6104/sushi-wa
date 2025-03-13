@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Thông báo</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#notifications">Thông báo đã gửi</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/send-notification">Gửi Thông báo đến tất cả người dùng</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/send-user-notification">Gửi Thông báo Cho Người Dùng Cụ Thể</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Notifications Tab -->
+            <div class="tab-pane container active" id="notifications">
+                <div class="container mt-4">
+                    <h1>Danh sách Thông báo</h1>
+
+					       <!-- Lặp qua từng người dùng -->
+					       <div th:each="entry : ${userNotifications}">
+					           <h3 th:text="${entry.key}"></h3> <!-- Hiển thị tên người dùng (key) -->
+
+					           <ul class="list-group">
+					               <!-- Lặp qua từng thông báo của người dùng -->
+					               <li class="list-group-item" th:each="notification : ${entry.value}">
+					                   <div>
+					                       <a th:href="${notification.link != null ? notification.link : '#'}" th:text="${notification.message}"></a>
+					                       <small class="text-muted d-block" th:text="${#temporals.format(notification.timestamp, 'dd/MM/yyyy HH:mm')}"></small>
+					                   </div>
+					                   <span class="badge bg-success" th:if="${!notification.read}">Chưa đọc</span>
+					                   <span class="badge bg-secondary" th:if="${notification.read}">Đã đọc</span>
+					               </li>
+					           </ul>
+					       </div>                    <!-- Notifications will be dynamically rendered here -->
+                </div>
+            </div>
+
+            <!-- Global Notification Tab -->
+            <div class="tab-pane container fade" id="send-global-notification">
+                <div class="container mt-4">
+                    <h3>Gửi Thông báo đến tất cả người dùng</h3>
+                    <form action="/admin/send-global-notification" method="post">
+                        <div class="mb-3">
+                            <label for="global-message" class="form-label">Nội dung Thông báo:</label>
+                            <textarea class="form-control" id="global-message" name="message" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="global-link" class="form-label">Liên kết:</label>
+                            <input type="url" class="form-control" id="global-link" name="link">
+                        </div>
+                        <div class="mb-3">
+                            <label for="global-scheduledTime" class="form-label">Thời gian gửi:</label>
+                            <input type="datetime-local" class="form-control" id="global-scheduledTime" name="scheduledTime" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi Thông báo</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User-Specific Notification Tab -->
+            <div class="tab-pane container fade" id="send-user-notification">
+                <div class="container mt-4">
+                    <h3>Gửi Thông báo Cho Người Dùng Cụ Thể</h3>
+                    <form action="/admin/send-user-notification" method="post">
+                        <div class="mb-3">
+                            <label for="user-message" class="form-label">Nội dung thông báo:</label>
+                            <textarea class="form-control" id="user-message" name="message" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-link" class="form-label">Liên kết:</label>
+                            <input type="url" class="form-control" id="user-link" name="link">
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-scheduledTime" class="form-label">Thời gian gửi:</label>
+                            <input type="datetime-local" class="form-control" id="user-scheduledTime" name="scheduledTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Chọn người dùng:</label>
+                            <div>
+                                <!-- User checkboxes will be dynamically rendered -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gửi Thông báo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Default datetime-local value for Vietnam timezone
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const vietnamTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+            const formattedDate = vietnamTime.toISOString().slice(0, 16);
+            document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
+                input.value = formattedDate;
+            });
+        });
+    </script>
+</body>
+</html>

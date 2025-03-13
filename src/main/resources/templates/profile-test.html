@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+	<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Bootstrap JavaScript (yêu cầu Popper.js) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="/index.css" rel="stylesheet">	
+
+    <style>
+       
+        .profile-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .score-btn {
+            background-color: white;
+            border: 2px solid #ffc107;
+            color: #000;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: bold;
+        }
+        .score-btn i {
+            color: #ffc107;
+        }
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .history-btn {
+            background-color: #0d1117;
+            color: white;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+        .empty-order img {
+            width: 150px;
+        }
+		/* Thanh tiến trình */
+		.progress-container {
+		    flex: 1;
+		    background-color: #e0e0e0;
+		    border-radius: 10px;
+		    height: 25px;
+		    position: relative;
+		    overflow: hidden;
+		    margin: 0 15px;
+		}
+
+		.progress-bar {
+		    height: 100%;
+		    width: 0%;
+		    border-radius: 10px;
+		    text-align: center;
+		    line-height: 25px;
+		    font-weight: bold;
+		    color: black;
+		    transition: width 0.5s ease-in-out;
+		}
+
+		.progress-bar span {
+		    position: absolute;
+		    width: 100%;
+		    text-align: center;
+		}
+
+		/* Căn chỉnh nhãn hạng thành viên */
+		.tier-labels {
+		    display: flex;
+		    justify-content: space-between;
+		    margin-top: 5px;
+		    font-weight: bold;
+		}
+		.custom-btn {
+		    background-color: #007bff; /* Màu xanh Bootstrap */
+		    color: white;
+		    border-radius: 20px; /* Bo tròn */
+		    padding: 10px 20px;
+		    font-weight: bold;
+		    border: none;
+		    transition: 0.3s;
+		}
+
+		.custom-btn:hover {
+		    background-color: #0056b3; /* Màu xanh đậm hơn khi hover */
+		}
+
+		tfoot {
+		    background-color: #f8f9fa; /* Màu nền nhẹ */
+		    border-radius: 10px; /* Bo tròn góc tfoot */
+		}
+
+		tfoot tr td {
+		    padding: 15px;
+		}
+		.fixed-header {
+		    position: sticky;
+		    top: 0;
+		    background: white;
+		    z-index: 1050; /* Đảm bảo header luôn hiển thị trên cùng */
+		    border-bottom: 1px solid #ddd;
+		}
+		.fixed-table thead {
+		    position: sticky;
+		    top: 0;
+		    z-index: 1020; /* Đảm bảo thead luôn trên tbody */
+		    background-color: #007bff; /* Màu nền của thead */
+		    color: white;
+		}
+
+		.scrollable-body {
+		    max-height: 60vh; /* Giới hạn chiều cao để có thể cuộn */
+		    overflow-y: auto;
+		}
+
+
+    </style>
+</head>
+<body>
+	<th:block th:replace="fragments/header :: header"></th:block>
+
+	<script src="/js/chatbot.js"></script>
+	<div class="container mt-4">
+	    <div class="row">
+	        <div class="col-md-8">
+	            <div class="profile-card">
+	                <img class="profile-img me-3" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a721f1ad-adae-4d25-b1ce-3e7ea9ff8b7c/daw12g3-b395b07a-7224-45f3-9502-aa9d31857300.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2E3MjFmMWFkLWFkYWUtNGQyNS1iMWNlLTNlN2VhOWZmOGI3Y1wvZGF3MTJnMy1iMzk1YjA3YS03MjI0LTQ1ZjMtOTUwMi1hYTlkMzE4NTczMDAuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0._oGF1Mv_gFjkLY7vgXQ6S6eNVk99sRUoU4aSeX5fKY0" alt="Profile">
+	                <div>
+	                    <h3 class="fw-bold" th:text="${user.name}"></h3>
+	                    <p><i class="fas fa-at"></i> <span th:text="${user.email}"></span></p>
+	                    <p><i class="far fa-calendar-check"></i> Tham gia: <span th:text="${#temporals.format(user.createdAt, 'HH:mm dd/MM/yyyy')}"></span></p>
+	                    <p><i class="fas fa-map-marker-alt"></i> Địa chỉ: <span th:text="${user.address}"></span></p>
+	                    <p><i class="fas fa-phone"></i> Số điện thoại: <span th:text="${user.phone}"></span></p>
+						<div class="">
+						    <p><strong id="membership-tier" class="d-none">Đang tải...</strong></p>
+							<div class="d-flex">  		
+								<span id="current-tier">Hạng hiện tại</span>
+							    <!-- Thanh tiến trình -->
+							    <div class="progress-container">
+					
+							        <div id="progress-bar" class="progress-bar">
+							            <span id="progress-text">0%</span>
+							        </div>
+					
+							    </div>
+								<span id="next-tier">Hạng tiếp theo</span>
+							</div>	
+						</div>
+
+						<!-- Ẩn totalSpending để JS lấy dữ liệu -->
+						<span id="totalSpendingValue" style="display:none;" th:text="${totalSpending}"></span>
+
+	                </div>
+	                <div class="ms-auto">
+	                    <button class="score-btn" th:text="${#numbers.formatInteger(user.points, 0, 'POINT')} + ' Điểm '"><i class="fas fa-feather-alt"></i></button>
+	                </div>
+	            </div>
+				<!-- Thanh điều hướng -->
+				<ul class="nav nav-tabs justify-content-center mt-3" id="historyTabs" role="tablist">
+				    <!-- Tab Lịch sử tích điểm -->
+					<!-- Tab navigation -->
+					<li class="nav-item">
+					    <a class="nav-link active" id="points-history-tab" data-bs-toggle="tab" href="#points-history" role="tab"
+					        aria-controls="points-history" aria-selected="true">
+					        <i class="fas fa-trophy"></i> Lịch sử tích điểm
+					    </a>
+					</li>
+					<li class="nav-item">
+					    <a class="nav-link" id="purchased-food-tab" data-bs-toggle="tab" href="#purchased-food" role="tab"
+					        aria-controls="purchased-food" aria-selected="false">
+					        <i class="fas fa-utensils"></i> Món ăn đã mua
+					    </a>
+					</li>
+				</ul>
+
+				<!-- Nội dung của các tab -->
+				<div class="tab-content mt-3">
+				    <!-- Nội dung Lịch sử tích điểm -->
+				    <div class="tab-pane fade show active" id="points-history" role="tabpanel" aria-labelledby="points-history-tab">
+				        <h3>Lịch Sử Tích Điểm</h3>
+				        <div class="table-responsive">
+				            <table class="table table-hover custom-table">
+				                <thead class="table-primary">
+				                    <tr>
+				                        <th>Ngày Tích Điểm</th>
+				                        <th>Mã Đơn Hàng</th>
+				                        <th>Tổng Tiền Thanh Toán</th>
+				                        <th>Điểm Đã Sử Dụng</th>
+				                        <th>Điểm Tích Lũy Thêm</th>
+				                        <th>Hành động</th>
+				                    </tr>
+				                </thead>
+				                <tbody>
+				                    <tr th:each="history, iter : ${pointsHistory}" th:if="${iter.index} &lt; 5">
+				                        <td th:text="${history.date}"></td>
+				                        <td th:text="${history.orderCode}"></td>
+				                        <td th:text="${#numbers.formatDecimal(history.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+				                        <td th:text="${history.pointsUsed}"></td>
+				                        <td th:text="${history.rewardPoints}"></td>
+				                        <td>
+				                            <a class="nav nav-link detail-link" th:href="'/my_order?modal=orderDetailsModal_' + ${history.orderCode}">
+				                                Chi tiết
+				                            </a>
+				                        </td>
+				                    </tr>
+				                </tbody>
+								<tfoot>
+								    <tr th:if="${not #lists.isEmpty(pointsHistory)}">
+								        <td colspan="6" class="text-center">
+								            <button class="btn custom-btn" data-bs-toggle="modal" data-bs-target="#pointsHistoryModal">
+								                Xem tất cả
+								            </button>
+								        </td>
+								    </tr>
+								</tfoot>
+				            </table>
+				        </div>				
+				    </div>
+
+				    <!-- Nội dung Món ăn đã mua -->
+				    <div class="tab-pane fade" id="purchased-food" role="tabpanel" aria-labelledby="purchased-food-tab">
+				        <h3>Món ăn đã mua</h3>
+				        <div class="table-responsive">
+				            <table class="table table-hover custom-table">
+				                <thead class="table-success">
+									<tr>
+						                <th>Tên Món Ăn</th>
+						                <th>Đã mua</th>
+						            </tr>
+						        </thead>
+						        <tbody>
+									<tr th:each="item, iter : ${top5MenuItems}" th:if="${iter.index} < 5">
+						                <td>
+						                    <a class="nav nav-link" th:href="@{/product-details/{token}(token=${item.token})}" title="Xem chi tiết">
+						                        <span th:text="${item.name}"></span>
+						                    </a>
+						                </td>
+						                <td th:text="${item.totalQuantity}"></td>
+						            </tr>
+						        </tbody>
+								<tfoot>
+								    <tr  th:if="${not #lists.isEmpty(top5MenuItems)}">
+								        <td colspan="6" class="text-center">
+								            <button class="btn custom-btn" data-bs-toggle="modal" data-bs-target="#purchasedFoodModal">
+								                Xem tất cả
+								            </button>
+								        </td>
+								    </tr>
+								</tfoot>
+				            </table>
+				        </div>
+				    </div>
+				</div>
+
+				<!-- Modal hiển thị toàn bộ lịch sử tích điểm -->
+				<div class="modal fade" id="pointsHistoryModal" tabindex="-1" aria-labelledby="pointsHistoryModalLabel" aria-hidden="true">
+				    <div class="modal-dialog modal-lg">
+				        <div class="modal-content">
+				            <div class="modal-header fixed-header">
+				                <h5 class="modal-title" id="pointsHistoryModalLabel">Toàn bộ lịch sử tích điểm</h5>
+				                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				            </div>
+				            <div class="modal-body scrollable-body">
+				                <div class="table-responsive fixed-table">
+				                    <table class="table table-hover custom-table">
+				                        <thead class="table-primary">
+				                            <tr>
+				                                <th>Ngày Tích Điểm</th>
+				                                <th>Mã Đơn Hàng</th>
+				                                <th>Tổng Tiền Thanh Toán</th>
+				                                <th>Điểm Đã Sử Dụng</th>
+				                                <th>Điểm Tích Lũy Thêm</th>
+				                                <th>Hành động</th>
+				                            </tr>
+				                        </thead>
+				                        <tbody>
+				                            <tr th:each="history : ${pointsHistory}">
+				                                <td th:text="${history.date}"></td>
+				                                <td th:text="${history.orderCode}"></td>
+				                                <td th:text="${#numbers.formatDecimal(history.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+				                                <td th:text="${history.pointsUsed}"></td>
+				                                <td th:text="${history.rewardPoints}"></td>
+				                                <td>
+				                                    <a class="nav nav-link detail-link" th:href="'/my_order?modal=orderDetailsModal_' + ${history.orderCode}">Chi tiết</a>
+				                                </td>
+				                            </tr>
+				                        </tbody>
+				                    </table>
+				                </div>
+				            </div>
+				            <div class="modal-footer">
+				                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+
+				
+				<!-- Modal Món ăn đã mua -->
+				<div class="modal fade" id="purchasedFoodModal" tabindex="-1" aria-labelledby="purchasedFoodModalLabel" aria-hidden="true">
+				    <div class="modal-dialog modal-lg">
+				        <div class="modal-content">
+				            <div class="modal-header fixed-header">
+				                <h5 class="modal-title" id="purchasedFoodModalLabel">Tất cả món ăn đã mua</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+				            </div>
+				            <div class="modal-body scrollable-body">
+				                <table class="table table-hover">
+				                    <thead class="table-success">
+										<tr>
+							                <th>Tên Món Ăn</th>
+							                <th>Tổng Số Lượng</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							            <tr th:each="item : ${top5MenuItems}">
+							                <td>
+							                    <a class="nav nav-link" th:href="@{/product-details/{token}(token=${item.token})}" title="Xem chi tiết món ăn">
+							                        <span th:text="${item.name}"></span>
+							                    </a>
+							                </td>
+							                <td th:text="${item.totalQuantity}"></td>
+							            </tr>
+							        </tbody>
+				                </table>
+				            </div>
+							<div class="modal-footer">
+				                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+				<div class="text-center mt-4 empty-order" th:if="${#lists.isEmpty(pointsHistory)}">
+				    <img src="https://cdn.dribbble.com/users/310943/screenshots/2792692/empty-state-illustrations.gif" style="width: 50%;" alt="No orders">
+				    <p class="mt-2">Bạn chưa có lịch sử tích điểm. Mua ngayyyy!!!!!!</p>
+				</div>
+	        </div>
+	        <div class="col-md-4">
+				<div class="side-image">
+                    <img src="/" width="100%" alt="Illustration">
+                </div>
+				<div class="dashboard-card">
+				    <div class="dashboard-header">
+				        <p>Tổng chi tiêu</p>
+				        <h5 th:text="${totalSpending} + ' ₫'"></h5>
+				    </div>
+				    
+				    <div class="dashboard-content">
+				        <div class="dashboard-item">
+				            <p>Đã mua</p>
+				            <h5><strong th:text="${#aggregates.sum(top5MenuItems.![totalQuantity])}"></strong></h5>
+				            <span class="icon"><i class="fa fa-book"></i> món ăn</span>
+				        </div>
+				        
+				        <div class="dashboard-item">
+				            <p>Đã mua</p>
+				            <h5><strong><span th:text="${#lists.size(pointsHistory)}"></span></strong></h5>
+				            <span class="icon"><i class="fa fa-thumbs-up"></i> đơn hàng</span>
+				        </div>
+				    </div>
+
+				    <div class="dashboard-icon">
+				        <i class="fa fa-clock"></i>
+				    </div>
+				</div>
+	        </div>
+	    </div>
+	</div>
+
+	<style>
+		.dashboard-card {
+		    background: white;
+		    border-radius: 15px;
+		    padding: 20px;
+		    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		    position: relative;
+		}
+
+		.dashboard-header {
+		    font-weight: bold;
+		    font-size: 16px;
+		    color: #333;
+		}
+
+		.dashboard-header h5 {
+		    font-size: 24px;
+		    font-weight: bold;
+		    margin-top: 5px;
+		}
+
+		.dashboard-content {
+		    display: flex;
+		    justify-content: space-between;
+		    margin-top: 20px;
+		}
+
+		.dashboard-item {
+		    text-align: center;
+		}
+
+		.dashboard-item h5 {
+		    font-size: 20px;
+		    font-weight: bold;
+		}
+
+		.icon {
+		    font-size: 14px;
+		    display: flex;
+		    align-items: center;
+		    gap: 5px;
+		    color: #333;
+		}
+
+		.dashboard-icon {
+		    position: absolute;
+		    top: 15px;
+		    right: 15px;
+		    background: #ffebcc;
+		    width: 40px;
+		    height: 40px;
+		    border-radius: 50%;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+
+		.dashboard-icon i {
+		    font-size: 20px;
+		    color: #333;
+		}
+
+	.custom-table {
+	    border-radius: 10px;
+	    overflow: hidden;
+	    background: #fff;
+	}
+	.custom-table th, .custom-table td {
+	    text-align: center;
+	    vertical-align: middle;
+	    padding: 12px;
+	}
+	.custom-table tbody tr:hover {
+	    background-color: #f8f9fa;
+	    transition: 0.3s;
+	}
+	.detail-link {
+	    color: #007bff;
+	    font-weight: bold;
+	}
+	.detail-link:hover {
+	    text-decoration: underline;
+	}
+	</style>
+	<!-- Nhúng file JS -->
+	<th:block th:replace="fragments/footer :: footer"></th:block>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		    // Lấy tổng chi tiêu từ thẻ hidden
+			let totalSpending = parseFloat(
+			    document.getElementById("totalSpendingValue").textContent
+			        .replace(/\./g, '') // Xóa dấu chấm ngăn cách hàng nghìn
+			        .replace(/,/g, '.') // Chuyển dấu phẩy thành dấu chấm (định dạng số thập phân)
+			);
+
+		    let membershipTier = "Đồng";
+		    let nextTier = "Bạc";
+		    let progressValue = `0 / 5.000.000`;
+		    let progressColor = "#CD7F32"; // Màu Đồng mặc định
+		    let nextThreshold = 5_000_000;
+
+		    if (totalSpending < 5_000_000) {
+		        membershipTier = "Đồng";
+		        nextTier = "Bạc";
+		        nextThreshold = 5_000_000;
+		    } else if (totalSpending < 10_000_000) {
+		        membershipTier = "Bạc";
+		        nextTier = "Vàng";
+		        nextThreshold = 10_000_000;
+		        progressColor = "#C0C0C0"; // Bạc
+		    } else if (totalSpending < 20_000_000) {
+		        membershipTier = "Vàng";
+		        nextTier = "Bạch Kim";
+		        nextThreshold = 20_000_000;
+		        progressColor = "#FFD700"; // Vàng
+		    } else {
+		        membershipTier = "Bạch Kim";
+		        nextTier = "Bạch Kim"; // Không có cấp cao hơn
+		        nextThreshold = totalSpending; // Đạt mức cao nhất
+		        progressColor = "#E5E4E2"; // Bạch Kim
+		    }
+
+		    // Cập nhật tiến trình theo dạng "đã chi tiêu / cần để lên hạng"
+		    progressValue = `${totalSpending.toLocaleString()} / ${nextThreshold.toLocaleString()}`;
+
+		    // Cập nhật giao diện
+		    document.getElementById("membership-tier").innerHTML = `<strong>${membershipTier}</strong>`;
+		    document.getElementById("next-tier").textContent = nextTier;
+		    document.getElementById("current-tier").textContent = membershipTier;
+		    
+		    let progressBar = document.getElementById("progress-bar");
+		    let progressPercentage = (totalSpending / nextThreshold) * 100;
+		    progressBar.style.width = progressPercentage + "%";
+		    progressBar.style.backgroundColor = progressColor;
+		    document.getElementById("progress-text").textContent = progressValue;
+		});
+	</script>	            
+	<!-- Bootstrap 5 -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

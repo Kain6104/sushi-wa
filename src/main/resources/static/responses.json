@@ -1,0 +1,17 @@
+{
+  "menu": "Tham khảo menu tại đây: <a href=\"/menu\">Menu</a>! <br><img src='/images/mangdi.jpg' alt='Menu' style='max-width: 100%; height: auto; border-radius:10px'>",
+  "gia": "Món sushi có giá từ 100k đến 500k tùy loại.",
+  "gio mo cua": "Chúng tôi mở cửa từ 10:00 đến 22:00.",
+  "giao hang": "Chúng tôi có dịch vụ giao hàng.",
+  "thoi gian giao hang": "Thời gian giao hàng mỗi ngày từ 10:00 đến 21:00. Phí giao hàng tùy vào địa chỉ của quý khách.",
+  "dia chi": "Địa chỉ: Tầng B1, TTTM GigaMall Thủ Đức. <br> Nhấp vào đây để mở chỉ đường: <a href=\"https://maps.google.com/maps/dir//Sushi+Wa+TTTM+Giga+Mall,+240+%C4%90.+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng+Hi%E1%BB%87p+B%C3%ACnh+Ch%C3%A1nh+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh/@10.8276275,106.7216355,16z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3175291a441368eb:0x7a1dd7b554da4946\" target=\"_blank\">Chỉ đường</a>",
+  "dang ky": "Đăng ký tài khoản Sushi Wa để hưởng những ưu đãi độc quyền dành cho thành viên: <br><a href=\"/register\">Đăng ký ngay!</a>",
+  "khuyen mai": "Khuyến mãi siêu hời khi dùng bữa tại quán! <br><img src='https://scontent-hkg4-2.xx.fbcdn.net/v/t39.30808-6/460730942_842923464658848_7395655611515685625_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHhiQxvWtwV4yDpSCHWy5a9IcWStk-cxw0hxZK2T5zHDeldJR1hB3JEPDyN8Vha19Bcz1oS1o2LPSu_KSnRVbY0&_nc_ohc=PRzzKVN2Sw8Q7kNvgG4d1JA&_nc_oc=AdhPk9NdllMWbtBlv1F-z1oVMVPa_Sb6747RovPyzZsoXU0zN1OL_afn7hanwT85tHzgAF_t-GehAMo_rjCnvnIL&_nc_zt=23&_nc_ht=scontent-hkg4-2.xx&_nc_gid=A2StaBBksU60UQvOIOmn6NL&oh=00_AYBpAWT36-lE1RFlBY2BdfgzxJaQf7rXtc6AaqUMAeRvFA&oe=67B175CD' alt='Khuyến mãi' style='max-width: 100%; height: auto; border-radius:10px'>",
+  "dat hang": "Bạn có thể đặt hàng online qua website của chúng tôi tại <a href=\"/checkout\">Đặt hàng ngay</a>.",
+  "phuong thuc thanh toan": "Chúng tôi hỗ trợ thanh toán qua Momo, thẻ ngân hàng và tiền mặt khi nhận hàng.",
+  "huong dan thanh toan": "Bạn có thể thanh toán qua Momo bằng cách quét mã QR hoặc liên kết ví. <a href=\"/payment\">Xem hướng dẫn thanh toán</a>.",
+  "danh gia mon an": "Bạn có thể đánh giá món ăn sau khi mua hàng. Vui lòng vào lịch sử đơn hàng để gửi đánh giá. <a href=\"/my_order\">Xem lịch sử đơn hàng</a>.",
+  "voucher": "Bạn có thể áp dụng mã voucher để nhận ưu đãi khi đặt hàng. Xem danh sách voucher hiện có tại <a href=\"/vouchers\">Kho voucher</a>.",
+  "vi voucher": "Ví voucher giúp bạn lưu trữ các mã khuyến mãi để sử dụng nhanh chóng khi thanh toán. <a href=\"/wallet\">Xem ví voucher</a>.",
+  "ho tro": "Cần hỗ trợ? Liên hệ với chúng tôi qua hotline 0123-456-789 hoặc email hotro.sushiwa@gmail.com."
+}

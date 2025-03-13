@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng của bạn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+	<link href="/index.css" rel="stylesheet">
+	<link href="/menu.css" rel="stylesheet">
+    <style>
+	
+		body {
+			font-family: 'Poppins', sans-serif;
+		    background-color: #fdf5f3;
+			margin-top: 100px;
+		}
+        h2 {
+            color: #ff6f61;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+	
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #ff6f61;
+            color: white;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody tr {
+            background-color: #ffffff;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .table img {
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background-color: #ff6f61;
+            border: none;
+            color: white;
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 14px;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff4e3f;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 30px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+            text-align: center;
+            color: #d32f2f;
+            background-color: #ffe6e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .total-amount {
+            font-size: 1.2rem;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .btn-success {
+                width: 100%;
+                padding: 12px 0;
+            }
+		
+            .btn-danger {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="http://localhost:8080/">
+                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg"  alt="Logo Sushi"> 
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="menu">Đặt món</a></li>
+                    <li class="nav-item"><a class="nav-link" href="promotions">Khuyến mãi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my_order">Đơn hàng</a></li>
+					<li class="nav-item"><a class="nav-link" href="profile">Khách hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact">Liên hệ</a></li>
+					<li class="nav-item" th:if="${session.role == 'admin'}">
+					    <a class="nav-link" href="/admin">Trang Admin</a>
+					</li>
+					<li class="nav-item" th:if="${session.loggedInUser == null}">
+					    <a class="nav-link" href="/login">Đăng nhập</a>
+					</li>
+					<li class="nav-item dropdown" th:if="${session.loggedInUser != null}">
+					    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					        [[${session.loggedInUser}]]
+					    </a>
+					    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+					        <a class="dropdown-item" href="/logout">Đăng xuất</a>
+					    </div>
+					</li>
+
+                </ul>
+				<a href="/cart">
+			    <button class="btn btn-outline-primary position-relative">
+			        <i class="fas fa-shopping-cart"></i> <!-- Biểu tượng giỏ hàng -->
+			        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+			            <span th:text="${cartItemCount}">0</span>
+			        </span>
+			    </button>
+				</a>
+            </div>
+        </div>
+    </nav>
+
+	<!-- Form Tìm kiếm -->
+		<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+		    <form action="/search" method="get">
+		        <div class="input-group">
+		            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+		                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+		            </a>
+		            <!-- Input search -->
+		            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+		            <!-- Biểu tượng giỏ hàng với số lượng món -->
+					<a href="/cart" class="input-group-text">
+		                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+		                    <i class="fas fa-shopping-cart"></i>
+		                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+		                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+		                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+		                    </span>
+		                </button>
+		            </a>
+		        </div>
+		    </form>
+		</div>
+
+		<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+		    <div class="container">
+		        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'index')} ? 'active'">
+		                <a class="nav-link" href="/index">
+		                    <i class="fas fa-home"></i><br>Trang chủ
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'menu')} ? 'active'">
+		                <a class="nav-link" href="/menu">
+		                    <i class="fas fa-utensils"></i><br>Đặt Món
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'promotions')} ? 'active'">
+		                <a class="nav-link" href="/promotions">
+		                    <i class="fas fa-tag"></i><br>Khuyến mãi
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+		                th:if="${session.loggedInUser != null}">
+		                <a class="nav-link" href="/my_order">
+		                    <i class="fas fa-box"></i><br>Đơn hàng
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'customer')} ? 'active'"
+		                th:if="${session.loggedInUser != null}">
+		                <a class="nav-link" href="/customer">
+		                    <i class="fas fa-user"></i><br>[[${session.loggedInUser}]]
+		                </a>
+		            </li>
+		            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'login')} ? 'active'"
+		                th:if="${session.loggedInUser == null}">
+		                <a class="nav-link" href="/login">
+		                    <i class="fas fa-user"></i><br>Đăng nhập
+		                </a>
+		            </li>
+		        </ul>
+		    </div>
+		</nav>
+
+		<div class="container mt-5">
+		    <h2 class="text-center">Giỏ hàng của bạn</h2>
+
+		    <!-- Giỏ hàng có sản phẩm -->
+		    <div th:if="${!cartItems.isEmpty()}">
+		        <div class="table-responsive"> <!-- Thêm lớp responsive -->
+		            <table class="table table-bordered">
+		                <thead>
+		                    <tr>
+		                        <th>Hình ảnh</th>
+		                        <th>Tên món</th>
+		                        <th>Giá</th>
+		                        <th>Số lượng</th>
+		                        <th>Tổng tiền</th>
+		                        <th>Hành động</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    <tr th:each="item : ${cartItems}">
+		                        <td>
+		                            <img th:src="${item['imageUrl']}" alt="Hình ảnh món ăn" class="img-fluid rounded" style="max-width: 60px; height: auto;">
+		                        </td>
+		                        <td th:text="${item['name']}">Tên món</td>
+		                        <td th:text="${item['price']}">Giá</td>
+		                        <td>
+		                            <form action="/cart/update" method="post" class="d-flex justify-content-center">
+		                                <input type="hidden" name="id" th:value="${item['id']}" />
+		                                <input type="number" name="quantity" th:value="${item['quantity']}" min="1" max="30"
+		                                       class="form-control text-center" style="width: 70px;" onchange="this.form.submit()" />
+		                            </form>
+		                        </td>
+		                        <td th:text="${item['total']}">Tổng tiền</td>
+		                        <td>
+		                            <form action="/cart/remove" method="post">
+		                                <input type="hidden" name="id" th:value="${item['id']}" />
+		                                <button type="submit" class="btn btn-danger btn-sm">
+		                                    <i class="fas fa-trash-alt"></i>
+		                                </button>
+		                            </form>
+		                        </td>
+		                    </tr>
+		                </tbody>
+		            </table>
+		        </div>
+
+		        <!-- Thông báo lỗi số lượng -->
+		        <div th:if="${quantityError}" class="alert alert-warning mt-3">
+		            <p th:text="${quantityError}">Số lượng phải nằm trong khoảng từ 1 đến 30.</p>
+		        </div>
+
+		        <!-- Tổng giá trị giỏ hàng và nút thanh toán -->
+		        <div class="mt-4 text-end">
+		            <p class="fw-bold">Tổng giá trị giỏ hàng: <span th:text="${totalAmount}">0</span> VND</p>
+		            <a href="/checkout" class="btn btn-success">Thanh toán</a>
+		        </div>
+		    </div>
+		</div>
+	<section class="banner show-on-scroll">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+					<div th:if="${cartItems.isEmpty()}">
+			            <p class="text-center mt-3">Giỏ hàng của bạn đang trống.</p>
+						<center><a href="menu" class="btn">Order Now →</a></center>	
+			       </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+	<footer class="footer">
+	       <div class="container">
+	           <div class="row">
+	               <div class="col-md-4">
+	                   <h5 class="footer-logo">Sushi Wa</h5>
+	                   <p>Sushi và Lẩu Băng chuyền tại Tầng B1 GigaMall Tp.Thủ Đức</p>
+	               </div>
+	               <div class="col-md-4">
+	                   <h5>Bạn cần hỗ trợ</h5>
+	                   <p>
+	                       <strong>Hoteline: 097 480 2998</strong><br>
+	                       Địa chỉ: Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh<br>
+	                       Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+	                   </p>
+					   <div class="social-icons">
+					       <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook">
+					           <i class="fab fa-facebook-f"></i>
+					       </a>
+					       <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+					           <i class="fab fa-twitter"></i>
+					       </a>
+					       <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+					           <i class="fab fa-youtube"></i>
+					       </a>
+					       <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+					           <i class="fab fa-instagram"></i>
+					       </a>
+					   </div>
+					   <div class="payment-icons mt-3">
+					       <a href="https://visa.com" target="_blank" aria-label="Stripe">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa">
+					       </a>
+					       <a href="https://www.mastercard.com" target="_blank" aria-label="mastercard">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard">
+					       </a>
+					       <a href="https://www.stripe.com" target="_blank" aria-label="Visa">
+					           <img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe">
+					       </a>
+					       <a href="https://www.paypal.com" target="_blank" aria-label="MasterCard">
+					           <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal">
+					       </a>
+					   </div>
+	               </div>
+	               <div class="col-md-2">
+	                   <h5>Hướng dẫn</h5>
+	                   <ul class="list-unstyled">
+	                       <li><a href="#">Cách đặt món</a></li>
+	                       <li><a href="#">Phương thức thanh toán</a></li>
+	                       <li><a href="#">Giao hàng tận nơi</a></li>
+	                       <li><a href="#">Chính sách đổi trả</a></li>
+	                       <li><a href="#">Câu hỏi thường gặp</a></li>
+	                   </ul>
+	               </div>
+	               <div class="col-md-2">
+	                   <h5>Hỗ trợ khách hàng</h5>
+	                   <ul class="list-unstyled">
+	                       <li><a href="#">Liên hệ chúng tôi</a></li>
+	                       <li><a href="#">Tư vấn thực đơn</a></li>
+	                       <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+	                       <li><a href="#">Chính sách bảo mật</a></li>
+	                       <li><a href="#">Điều khoản sử dụng</a></li>
+	                   </ul>
+	               </div>
+	               
+	           </div>
+	         
+	       </div>
+	</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Voucher</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<!-- AOS CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+	<link href="/index.css" rel="stylesheet">
+	<link href="/menu.css" rel="stylesheet">
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <h2>Chỉnh sửa Voucher</h2>
+
+		<p>
+		    <a href="javascript:history.back()" class="text-decoration-none text-dark">
+		        <i class="fa-solid fa-arrow-left"></i> Quay lại
+		    </a>
+		</p>
+        <!-- Hiển thị thông báo thành công hoặc lỗi -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="@{/admin/vouchers/edit/{code}(code=${voucher.code})}" method="POST">
+			<table class="voucher-form-table">
+			    <tr>
+			        <td><label for="code">Mã Voucher</label></td>
+			        <td><input type="text" id="code" name="code" th:value="${voucher.code}" class="form-control" readonly></td>
+
+			        <td><label for="discountType">Loại giảm giá</label></td>
+			        <td>
+			            <select id="discountType" name="discountType" class="form-control" required onchange="toggleDiscountFields()">
+			                <option value="PERCENT" th:selected="${voucher.discountType == 'PERCENT'}">Phần trăm</option>
+			                <option value="AMOUNT" th:selected="${voucher.discountType == 'AMOUNT'}">Số tiền</option>
+			            </select>
+			        </td>
+			    </tr>
+
+			    <tr>
+			        <td><label for="minOrderAmount">Đơn hàng tối thiểu (VNĐ)</label></td>
+			        <td><input type="number" id="minOrderAmount" name="minOrderAmount" th:value="${voucher.minOrderAmount}" class="form-control" required></td>
+
+			        <td><label for="discountAmount">Mức giảm giá</label></td>
+			        <td>
+			            <div class="input-group">
+			                <input type="number" id="discountAmount" name="discountAmount" th:value="${voucher.discountAmount}" class="form-control" required>
+			                <div class="input-group-append">
+			                    <span class="input-group-text" id="discountSuffix"></span>
+			                </div>
+			            </div>
+			        </td>
+			    </tr>
+				<tr >
+					<td><label for="maxDiscount">Giảm tối đa (VNĐ, nếu giảm theo %)</label></td>
+					<td><input type="number" id="maxDiscount" name="maxDiscount" th:value="${voucher.maxDiscount}" class="form-control"></td>
+			        <td colspan="2"></td>
+			    </tr>
+			    <tr>
+			        <td><label for="maxDiscount">Giảm tối đa (VNĐ, nếu giảm theo %)</label></td>
+			        <td><input type="number" id="maxDiscount" name="maxDiscount" th:value="${voucher.maxDiscount}" class="form-control"></td>
+					<td colspan="2"></td>
+
+			    </tr>
+
+			    <tr>
+			        <td><label for="maxUsage">Số lần sử dụng tối đa</label></td>
+			        <td><input type="number" id="maxUsage" name="maxUsage" th:value="${voucher.maxUsage}" class="form-control" required></td>
+
+			        <td><label for="maxUsagePerUser">Số lần user có thể dùng</label></td>
+			        <td><input type="number" id="maxUsagePerUser" name="maxUsagePerUser" th:value="${voucher.maxUsagePerUser}" class="form-control" required></td>
+			    </tr>
+
+			    <tr>
+			        <td><label for="startDate">Ngày bắt đầu</label></td>
+			        <td><input type="datetime-local" id="startDate" name="startDate" th:value="${voucher.startDate}" class="form-control" required></td>
+
+			        <td><label for="endDate">Ngày kết thúc</label></td>
+			        <td><input type="datetime-local" id="endDate" name="endDate" th:value="${voucher.endDate}" class="form-control" required></td>
+			    </tr>
+
+			    <tr>
+			        <td><label>Áp dụng cho tất cả món ăn</label></td>
+			        <td><input type="checkbox" id="applicableToAll" name="applicableToAll" th:checked="${voucher.applicableToAll}"></td>
+			        <td colspan="2"></td>
+			    </tr>
+			</table>
+
+			<!-- Chọn danh mục để chọn nhanh -->
+			<div class="form-group mt-3">
+			    <label><strong>Chọn nhanh theo danh mục:</strong></label>
+			    <div class="d-flex flex-wrap">
+			        <div th:each="menuItem, iterStat : ${foodItems}" 
+			             th:if="${foodItems.![category].indexOf(menuItem.category) == iterStat.index}" 
+			             class="form-check mr-3">
+			            <input type="checkbox" class="form-check-input category-checkbox" 
+			                   th:id="'category-' + ${menuItem.category}" 
+			                   th:attr="data-category=${menuItem.category}">
+			            <label th:for="'category-' + ${menuItem.category}" class="form-check-label">
+			                <span th:text="${menuItem.category}"></span> 
+			                (<span th:text="${categoryCounts[menuItem.category]}"></span> món)
+			            </label>
+			        </div>
+			    </div>
+			</div>
+
+			<!-- Chọn món ăn áp dụng voucher -->
+			<div class="form-group mt-3">
+			    <label><strong>Chọn món ăn áp dụng voucher:</strong></label>
+			    <div class="border p-3 rounded bg-white">
+			        <div class="row">
+			            <div th:each="menuItem : ${foodItems}" class="col-md-4 col-sm-6 mb-3">
+			                <div class="form-check d-flex align-items-center">
+			                    <input type="checkbox" name="menuItemIds" th:value="${menuItem.itemId}" 
+			                           class="form-check-input menu-item-checkbox"
+			                           th:checked="${voucher.applicableItems != null and voucher.applicableItems.contains(menuItem)}"
+			                           th:attr="data-price=${menuItem.price}, data-category=${menuItem.category}" 
+			                           id="menuItem-${menuItem.itemId}">
+			                    <label th:for="'menuItem-' + ${menuItem.itemId}" class="form-check-label flex-grow-1 ml-2 d-flex align-items-center">
+			                        <img th:src="${menuItem.imageUrl}" alt="Hình ảnh món ăn" class="rounded" 
+			                             style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+			                        <div>
+			                            <span th:text="${menuItem.name}"></span>
+			                            <small class="text-muted d-block">(Giá: <span th:text="${menuItem.price}"></span> VND)</small>
+			                            <small class="text-muted d-block">Danh mục: <span th:text="${menuItem.category}"></span></small>
+			                        </div>
+			                    </label>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
+			<script>
+			    document.addEventListener("DOMContentLoaded", function () {
+			        let applicableToAllCheckbox = document.getElementById("applicableToAll");
+			        let categoryCheckboxes = document.querySelectorAll(".category-checkbox");
+			        let menuItemCheckboxes = document.querySelectorAll(".menu-item-checkbox");
+
+			        // ✅ Nếu "Áp dụng cho tất cả" được chọn ngay khi load trang thì chọn hết danh mục và món ăn
+			        function initializeSelection() {
+			            if (applicableToAllCheckbox.checked) {
+			                categoryCheckboxes.forEach(checkbox => checkbox.checked = true);
+			                menuItemCheckboxes.forEach(checkbox => checkbox.checked = true);
+			            }
+			        }
+
+			        // ✅ Cập nhật trạng thái checkbox "Áp dụng cho tất cả"
+			        function updateApplicableToAll() {
+			            let allCategoriesChecked = Array.from(categoryCheckboxes).every(checkbox => checkbox.checked);
+			            let allMenuItemsChecked = Array.from(menuItemCheckboxes).every(checkbox => checkbox.checked);
+
+			            applicableToAllCheckbox.checked = allCategoriesChecked && allMenuItemsChecked;
+			        }
+
+			        // ✅ Cập nhật trạng thái của checkbox danh mục khi bỏ chọn món ăn
+			        function updateCategoryCheckboxes() {
+			            categoryCheckboxes.forEach(categoryCheckbox => {
+			                let selectedCategory = categoryCheckbox.getAttribute("data-category");
+			                let anyMenuItemChecked = Array.from(menuItemCheckboxes).some(menuItemCheckbox => 
+			                    menuItemCheckbox.getAttribute("data-category") === selectedCategory && menuItemCheckbox.checked
+			                );
+			                
+			                categoryCheckbox.checked = anyMenuItemChecked; // Nếu còn món trong danh mục được chọn thì giữ checked
+			            });
+			        }
+
+			        // ✅ Khi tick "Áp dụng cho tất cả", chọn hết danh mục và món ăn
+			        applicableToAllCheckbox.addEventListener("change", function () {
+			            let isChecked = this.checked;
+			            categoryCheckboxes.forEach(checkbox => checkbox.checked = isChecked);
+			            menuItemCheckboxes.forEach(checkbox => checkbox.checked = isChecked);
+			        });
+
+			        // ✅ Khi chọn danh mục, tự động chọn tất cả món trong danh mục
+			        categoryCheckboxes.forEach(categoryCheckbox => {
+			            categoryCheckbox.addEventListener("change", function () {
+			                let selectedCategory = this.getAttribute("data-category");
+			                let isChecked = this.checked;
+
+			                menuItemCheckboxes.forEach(menuItemCheckbox => {
+			                    if (menuItemCheckbox.getAttribute("data-category") === selectedCategory) {
+			                        menuItemCheckbox.checked = isChecked;
+			                    }
+			                });
+
+			                updateApplicableToAll(); // Cập nhật checkbox "Áp dụng cho tất cả"
+			            });
+			        });
+
+			        // ✅ Khi chọn/bỏ chọn món ăn, cập nhật trạng thái "Áp dụng cho tất cả" & checkbox danh mục
+			        menuItemCheckboxes.forEach(menuItemCheckbox => {
+			            menuItemCheckbox.addEventListener("change", function () {
+			                if (!this.checked) {
+			                    applicableToAllCheckbox.checked = false; // ❌ Bỏ chọn "Áp dụng cho tất cả" nếu có món bị bỏ chọn
+			                }
+			                updateCategoryCheckboxes(); // Cập nhật trạng thái của danh mục
+			                updateApplicableToAll();
+			            });
+			        });
+
+			        initializeSelection(); // Gọi khi trang vừa load
+			        updateApplicableToAll(); // Cập nhật trạng thái checkbox ban đầu
+			        updateCategoryCheckboxes(); // Cập nhật trạng thái danh mục ban đầu
+			    });
+			</script>
+			<style>
+			    #usageCondition {
+			        width: 100%; /* Chiều rộng 100% */
+			        min-height: 300px; /* Đảm bảo textarea không quá nhỏ */
+			        height: auto; /* Tự động mở rộng theo nội dung */
+					overflow-y: auto; /* Hiển thị thanh cuộn dọc khi cần thiết */
+			    }
+			</style>
+			<div class="form-group">
+			    <label>Điều kiện sử dụng:</label>
+			    <textarea type="text" class="form-control" id="usageCondition" name="usageCondition" th:value="${voucher.usageCondition}"> </textarea>
+			</div>
+
+
+			<script>
+			    document.addEventListener("DOMContentLoaded", function () {
+			        const textarea = document.getElementById("usageCondition");
+
+			        function autoResize() {
+			            textarea.style.height = "auto"; // Reset height để tính lại kích thước đúng
+			            textarea.style.height = textarea.scrollHeight + "px"; // Thiết lập chiều cao theo nội dung
+			        }
+
+			        textarea.addEventListener("input", autoResize);
+			        autoResize(); // Gọi ngay khi trang load để textarea mở rộng đúng với nội dung ban đầu
+			    });
+			</script>
+
+            <button type="submit" class="btn btn-primary">Cập nhật Voucher</button>
+            <a href="/admin/vouchers" class="btn btn-secondary">Quay lại trang Voucher</a>
+        </form>
+    </div>
+	<script>
+		function formatDateTime(dateTimeStr) {
+		    const date = new Date(dateTimeStr);
+		    if (isNaN(date)) return "Không hợp lệ"; // Kiểm tra lỗi
+
+		    const hours = String(date.getHours()).padStart(2, "0");
+		    const minutes = String(date.getMinutes()).padStart(2, "0");
+		    const day = String(date.getDate()).padStart(2, "0");
+		    const month = String(date.getMonth() + 1).padStart(2, "0");
+		    const year = date.getFullYear();
+
+		    return `${hours}:${minutes} ${day}/${month}/${year}`;
+		}
+
+		function generateUsageCondition() {
+		    const minOrderAmount = document.getElementById("minOrderAmount").value || "0";
+		    const discountType = document.getElementById("discountType").value;
+		    const discountAmount = document.getElementById("discountAmount").value || "0";
+		    const maxDiscount = document.getElementById("maxDiscount").value || "0";
+		    const maxUsage = document.getElementById("maxUsage").value || "0";
+		    const maxUsagePerUser = document.getElementById("maxUsagePerUser").value || "0";
+		    const startDate = formatDateTime(document.getElementById("startDate").value);
+		    const endDate = formatDateTime(document.getElementById("endDate").value);
+		    const applicableToAll = document.getElementById("applicableToAll").checked;
+
+		    const selectedFoodItems = Array.from(document.querySelectorAll(".menu-item-checkbox:checked"))
+		        .map(item => {
+		            const nameElement = item.nextElementSibling.querySelector("span");
+		            if (!nameElement) return null;
+		            const name = nameElement.innerText.trim();
+		            const price = item.getAttribute("data-price") || "0";
+		            return `  + ${name} (Giá: ${price} VND)`;
+		        }).filter(Boolean); // Loại bỏ các giá trị null
+
+		    let condition = `Điều kiện áp dụng voucher:\n`;
+		    condition += `- Áp dụng cho đơn hàng từ ${parseInt(minOrderAmount).toLocaleString()} VNĐ trở lên.\n`;
+
+		    if (discountType === "PERCENT") {
+		        condition += `- Giảm ${discountAmount}% trên tổng giá trị đơn hàng`;
+		        if (parseInt(maxDiscount) > 0) {
+		            condition += ` (tối đa ${parseInt(maxDiscount).toLocaleString()} VNĐ).`;
+		        }
+		        condition += `\n`;
+		    } else {
+		        condition += `- Giảm trực tiếp ${parseInt(discountAmount).toLocaleString()} VNĐ trên tổng giá trị đơn hàng.\n`;
+		    }
+
+		    condition += `- Mỗi voucher có thể được sử dụng tối đa ${parseInt(maxUsage).toLocaleString()} lần.\n`;
+		    condition += `- Mỗi khách hàng được sử dụng tối đa ${parseInt(maxUsagePerUser).toLocaleString()} lần.\n`;
+		    condition += `- Thời gian áp dụng: từ ${startDate} đến ${endDate}.\n`;
+
+		    if (applicableToAll) {
+		        condition += `- Voucher áp dụng cho tất cả các món ăn trong thực đơn.\n`;
+		    } else if (selectedFoodItems.length > 0) {
+		        condition += `- Voucher áp dụng cho các món:\n${selectedFoodItems.join("\n")}\n`;
+		    } else {
+		        condition += `- Voucher không áp dụng cho bất kỳ món ăn cụ thể nào.\n`;
+		    }
+
+		    document.getElementById("usageCondition").value = condition;
+		}
+
+		document.addEventListener("DOMContentLoaded", function () {
+		    const elementsToWatch = [
+		        "minOrderAmount", "discountType", "discountAmount", "maxDiscount",
+		        "maxUsage", "maxUsagePerUser", "startDate", "endDate", "applicableToAll"
+		    ];
+
+		    elementsToWatch.forEach(id => {
+		        document.getElementById(id).addEventListener("input", generateUsageCondition);
+		    });
+
+		    document.querySelectorAll(".menu-item-checkbox").forEach(item => {
+		        item.addEventListener("change", generateUsageCondition);
+		    });
+
+		    generateUsageCondition(); // Gọi khi load trang
+		});
+		
+		function toggleDiscountFields() {
+				        var discountType = document.getElementById("discountType").value;
+				        var maxDiscountField = document.getElementById("maxDiscountField");
+				        var discountAmountInput = document.getElementById("discountAmount");
+				        var discountSuffix = document.getElementById("discountSuffix");
+
+				        if (discountType === "PERCENT") {
+				            maxDiscountField.style.display = "block";
+				            discountAmountInput.max = 100; // Giới hạn tối đa 100%
+				            discountSuffix.textContent = "%";
+				        } else {
+				            maxDiscountField.style.display = "none";
+				            discountAmountInput.removeAttribute("max"); // Loại bỏ giới hạn khi giảm theo số tiền
+				            discountSuffix.textContent = "VNĐ";
+				        }
+				    }
+
+				    // Gọi hàm ngay khi tải trang để đảm bảo trạng thái ban đầu đúng
+				    document.addEventListener("DOMContentLoaded", toggleDiscountFields);
+	</script>
+
+
+
+    <!-- Thêm Bootstrap JS nếu cần -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.10/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

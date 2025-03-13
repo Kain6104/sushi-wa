@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Wa</title>
+    <link rel="icon" href="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">	
+    <!-- Link đến Bootstrap CSS từ CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+	<!-- Thêm Font Awesome CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="index.css" rel="stylesheet">
+	<style>
+		.form-control::placeholder {
+		    font-size: 12px; /* Điều chỉnh kích thước chữ */
+		}
+	</style>
+</head>
+<body>
+	<!-- Navbar trên màn hình lớn -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top d-none d-sm-block">
+	    <div class="container">
+	        <a class="navbar-brand" href="http://localhost:8080/">
+	            <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi">
+	        </a>
+	        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	            <span class="navbar-toggler-icon"></span>
+	        </button>
+	        <div class="collapse navbar-collapse" id="navbarNav">
+	            <ul class="navbar-nav ms-auto">
+	                <li class="nav-item"><a class="nav-link" href="menu">Đặt món</a></li>
+	                <li class="nav-item"><a class="nav-link" href="promotions">Khuyến mãi</a></li>
+	                <li class="nav-item"><a class="nav-link" href="my_order" th:if="${session.loggedInUser != null}">Đơn hàng</a></li>
+	                <li class="nav-item"><a class="nav-link" href="profile" th:if="${session.loggedInUser != null}">Khách hàng</a></li>
+	                <li class="nav-item"><a class="nav-link" href="contact">Liên hệ</a></li>
+	                <li class="nav-item" th:if="${session.role == 'admin'}">
+	                    <a class="nav-link" href="/admin">Trang Admin</a>
+	                </li>
+	                <li class="nav-item" th:if="${session.loggedInUser == null}">
+	                    <a class="nav-link" href="/login">Đăng nhập</a>
+	                </li>
+	                <li class="nav-item dropdown" th:if="${session.loggedInUser != null}">
+	                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                        [[${session.loggedInUser}]]
+	                    </a>
+	                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+	                        <a class="dropdown-item" href="/logout">Đăng xuất</a>
+	                    </div>
+	                </li>
+	            </ul>
+	            <!-- Biểu tượng giỏ hàng -->
+				<div class="nav-item">
+					<a href="/cart">
+				    <button class="btn btn-outline-primary position-relative">
+				        <i class="fas fa-shopping-cart"></i> <!-- Biểu tượng giỏ hàng -->
+				        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+				            <span th:text="${cartItemCount}">0</span>
+				        </span>
+				    </button>
+					</a>
+				</div>
+	        </div>
+	    </div>
+	</nav>
+	<!-- Form Tìm kiếm -->
+	<div class="search-container bg-light fixed-top text-center mb-4 d-block d-sm-none">
+	    <form action="/search" method="get">
+	        <div class="input-group">
+	            <a class="navbar-brand" style="margin-left: 5px;" href="/index">
+	                <img src="https://gigamall.com.vn/data/2024/05/10/14290213_shushiwa.jpg" alt="Logo Sushi Wa">
+	            </a>
+	            <!-- Input search -->
+	            <input type="text" name="query" class="form-control" placeholder="Tìm kiếm món ăn, khuyến mãi..." required>
+	            <!-- Biểu tượng giỏ hàng với số lượng món -->
+				<a href="/cart" class="input-group-text">
+	                <button type="button" class=" mt-1 btn btn-outline-primary position-relative">
+	                    <i class="fas fa-shopping-cart"></i>
+	                    <!-- Hiển thị số lượng món trong giỏ hàng -->
+	                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+	                        <span th:text="${cartItemCount}">0</span> <!-- Hiển thị số lượng -->
+	                    </span>
+	                </button>
+	            </a>
+	        </div>
+	    </form>
+	</div>
+	<nav class="navbar navbar-light bg-light fixed-bottom d-block d-sm-none">
+	    <div class="container">
+	        <ul class="navbar-nav w-100 d-flex justify-content-between m-0">
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'index')} ? 'active'">
+	                <a class="nav-link" href="/index">
+	                    <i class="fas fa-home"></i><br>Trang chủ
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'menu')} ? 'active'">
+	                <a class="nav-link" href="/menu">
+	                    <i class="fas fa-utensils"></i><br>Đặt Món
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'promotions')} ? 'active'">
+	                <a class="nav-link" href="/promotions">
+	                    <i class="fas fa-tag"></i><br>Khuyến mãi
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'my_order')} ? 'active'"
+	                th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/my_order">
+	                    <i class="fas fa-box"></i><br>Đơn hàng
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'customer')} ? 'active'"
+	                th:if="${session.loggedInUser != null}">
+	                <a class="nav-link" href="/customer">
+	                    <i class="fas fa-user"></i><br>[[${session.loggedInUser}]]
+	                </a>
+	            </li>
+	            <li class="nav-item text-center" th:classappend="${#strings.startsWith(page, 'login')} ? 'active'"
+	                th:if="${session.loggedInUser == null}">
+	                <a class="nav-link" href="/login">
+	                    <i class="fas fa-user"></i><br>Đăng nhập
+	                </a>
+	            </li>
+	        </ul>
+	    </div>
+	</nav>
+	<!-- Container for Links -->
+	<div class="container pt-3">
+	    <h2 class="text-center mb-3">Quản lý tài khoản</h2>
+	    <div class="row">
+	        <div class="col-md-12">
+	            <div class="list-group">
+					<div class="list-group-item">
+					    <p class="fw-bold">Xin chào, <span th:text="${user.name}"></span>!</p>
+					    <div class="form-group mb-2">
+					        <label class="fw-semibold">Số điểm khả dụng của bạn là:</label>
+					        <p class="text-primary fs-5 mb-0" th:text="${formattedPoints} +' điểm'"></p>
+					    </div>
+					    <div class="form-group">
+					        <label class="fw-semibold">Tổng chi tiêu:</label>
+					        <p class="text-success fs-5 mb-0" th:text="${totalSpending}+ ' ₫'"></p>
+					    </div>
+					</div>
+					<br>
+	                <!-- Link 1: Thông tin cá nhân -->
+					<a href="/admin" class="list-group-item list-group-item-action" th:if="${session.role == 'admin'}">
+	                 	<i class="fas fa-user-shield"></i>Trang Admin
+	                </a>
+	                <a href="/profile" class="list-group-item list-group-item-action">
+	                    <i class="fas fa-user"></i> Thông tin cá nhân
+	                </a>
+	                
+	                <!-- Link 2: Địa chỉ nhận hàng -->
+	                <a href="/shipping-address" class="list-group-item list-group-item-action">
+	                    <i class="fas fa-map-marker-alt"></i> Địa chỉ nhận hàng
+	                </a>
+	                <!-- Link 3: Đơn hàng từng mua -->
+	                <a href="/my_order" class="list-group-item list-group-item-action">
+	                    <i class="fas fa-box"></i> Đơn hàng đã mua
+	                </a>
+
+	                <!-- Link 4: Hóa đơn -->
+	                <a href="/my_order" class="list-group-item list-group-item-action">
+	                    <i class="fas fa-file-invoice"></i> Hóa đơn
+	                </a>
+
+	                <!-- Link 5: Chọn kênh nhận thông báo -->
+	                <a href="/notification-preferences" class="list-group-item list-group-item-action">
+	                    <i class="fas fa-bell"></i> Chọn kênh nhận thông báo
+	                </a>
+					<a href="/contact" class="list-group-item list-group-item-action">
+	                  <i class="fas fa-envelope"></i> Liên hệ
+	                </a>
+					 <br>
+					<a href="/logout" class="list-group-item list-group-item-action">
+						 <i class="fa fa-sign-out" aria-hidden="true"> </i> Đăng xuất </a>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<footer class="footer mt-5">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-12">
+					<!-- Dòng hiển thị Hotline và nút "Xem thêm" -->
+					<div class="d-flex justify-content-between align-items-center">
+					    <!-- Hiển thị số Hotline -->
+					    <p class="mb-0"><strong>Hotline: 097 480 2998</strong></p>
+					    <!-- Dropdown để xem thêm -->
+						<button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#footerDetails" aria-expanded="false" aria-controls="footerDetails" id="toggleButton">
+						    Xem thêm
+						</button>
+					</div>
+	                <!-- Các chi tiết footer ẩn -->
+	                <div class="collapse mt-3" id="footerDetails">
+	                    <div class="row">
+	                        <div class="col-md-4">
+	                            <h5 class="footer-logo">Sushi Wa - Sushi và Lẩu Băng chuyền</h5>
+	                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.7867190715383!2d106.71906057480564!3d10.827627489324223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175291a441368eb%3A0x7a1dd7b554da4946!2sSushi%20Wa!5e0!3m2!1svi!2s!4v1728326309222!5m2!1svi!2s" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+	                        </div>
+	                        <div class="cuoicung col-md-4">
+	                            <h5>Bạn cần hỗ trợ</h5>
+								Hoteline:  <strong> <a href="tel:0974802998">097 480 2998</a> </strong><br>
+
+	                            <p>
+	                                Địa chỉ: <a class="btn-reservation" href="https://maps.google.com/maps/dir//Sushi+Wa+TTTM+Giga+Mall,+240+%C4%90.+Ph%E1%BA%A1m+V%C4%83n+%C4%90%E1%BB%93ng+Hi%E1%BB%87p+B%C3%ACnh+Ch%C3%A1nh+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh" target="_blank">Tầng B1, TTTM GigaMall, 240-242 Phạm Văn Đồng, Hiệp Bình Chánh, Thủ Đức, Tp. Hồ Chí Minh</a><br>
+	                                Email: <a href="mailto:hotro.sushiwa@gmail.com">hotro.sushiwa@gmail.com</a>
+	                            </p>
+	                            <div class="social-icons">
+	                                <a href="https://www.facebook.com/sushiwa" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+	                                <a href="https://www.twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+	                                <a href="https://www.youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+	                                <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+	                            </div>
+	                            <div class="payment-icons mt-3">
+	                                <a href="https://visa.com" target="_blank" aria-label="Visa"><img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa"></a>
+	                                <a href="https://www.mastercard.com" target="_blank" aria-label="Mastercard"><img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard"></a>
+	                                <a href="https://www.stripe.com" target="_blank" aria-label="Stripe"><img src="https://cdn-icons-png.flaticon.com/512/825/825425.png" alt="Stripe"></a>
+	                                <a href="https://www.paypal.com" target="_blank" aria-label="Paypal"><img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="Paypal"></a>
+	                            </div>
+	                        </div>
+	                        <div class="col-md-2">
+	                            <h5>Hướng dẫn</h5>
+	                            <ul class="list-unstyled">
+	                                <li><a href="#">Cách đặt món</a></li>
+	                                <li><a href="#">Phương thức thanh toán</a></li>
+	                                <li><a href="#">Giao hàng tận nơi</a></li>
+	                                <li><a href="#">Chính sách đổi trả</a></li>
+	                                <li><a href="#">Câu hỏi thường gặp</a></li>
+	                            </ul>
+	                        </div>
+	                        <div class="col-md-2">
+	                            <h5>Hỗ trợ khách hàng</h5>
+	                            <ul class="list-unstyled">
+	                                <li><a href="#">Liên hệ chúng tôi</a></li>
+	                                <li><a href="#">Tư vấn thực đơn</a></li>
+	                                <li><a href="#">Hướng dẫn đặt tiệc</a></li>
+	                                <li><a href="#">Chính sách bảo mật</a></li>
+	                                <li><a href="#">Điều khoản sử dụng</a></li>
+	                            </ul>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="cuoicung col-12 mt-3 mb-3 text-center text-secondary">
+	                <i>Bản quyền thuộc &copy;<script>document.write(new Date().getFullYear());</script> Sushi Wa.</i>
+	            </div>
+	        </div>
+	    </div>
+	</footer>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript để thêm hiệu ứng khi cuộn -->
+    <script>
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+
+        document.addEventListener('scroll', function() {
+            document.querySelectorAll('.show-on-scroll').forEach(function(element) {
+                if (isInViewport(element)) {
+                    element.classList.add('show-on-scroll');
+                }
+            });
+        });
+		// Lắng nghe sự kiện collapse (mở/thu gọn)
+		   document.getElementById('toggleButton').addEventListener('click', function() {
+		       var isExpanded = this.getAttribute('aria-expanded') === 'true';
+		       this.textContent = isExpanded ? 'Rút gọn' : 'Xem thêm';
+		   });
+    </script>
+</body>
+</html>

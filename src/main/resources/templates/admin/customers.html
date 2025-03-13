@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khách hàng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+		.table{
+			width:100%;
+		}
+	
+		 .table th {
+		     position: sticky;
+		     top: 0; /* Cố định phần đầu của bảng ở trên cùng */
+		     z-index: 2;
+		     background-color: #343a40;
+		     color: white;
+		     text-align: center;
+		 }
+	
+		 .table td {
+		     text-align: center;
+		     vertical-align: middle;
+		 }
+	
+		.sidebar ul li:hover {
+		    background-color: #495057;
+		}
+	
+		body {
+			font-family: 'Poppins', sans-serif;
+			background-color: #fdf5f3;
+	          margin: 0;
+	          padding: 0;
+	          display: flex;
+	      }
+	
+		.stat-title {
+		  position: relative; /* Để định vị vị trí tuyệt đối của icon bên trong */
+		}
+	
+		.icon-container {
+		  position: absolute; /* Định vị biểu tượng tuyệt đối */
+		  bottom: 20px; /* Khoảng cách từ dưới cùng */
+		  right: 20px;  /* Khoảng cách từ bên phải */
+		}
+	
+		.circle-icon {
+		  display: inline-block;
+		
+		}
+	
+	
+		.sidebar {
+		    width: 70px; /* Kích thước sidebar khi không rê chuột */
+		    background-color: #333;
+			position: fixed; /* Cố định sidebar */
+			   top: 0px; /* Đặt sidebar ở trên cùng */
+			   left: 0; /* Đặt sidebar ở bên trái */
+		    padding: 15px;
+		    transition: width 0.3s;
+			position: fixed; /* Cố định sidebar */
+			height: 100%;
+			z-index: 1000; /* Đảm bảo sidebar ở trên cùng */
+	
+		}
+		.sidebar h2 {
+		    color: white;
+		    text-align: center;
+		    font-size: 20px;
+		    margin-bottom: 20px;
+		}
+	
+		/* Kiểu dáng các mục trong sidebar */
+		.sidebar ul {
+		    list-style-type: none;
+		    padding: 0;
+		}
+	
+		.sidebar-item {
+		    margin: 15px 0;
+		}
+	
+		.sidebar-item a {
+		    color: white;
+		    text-decoration: none;
+		    display: flex;
+		    align-items: center;
+		    transition: padding 0.3s;
+		}
+	
+		.sidebar-item i {
+		    font-size: 24px;
+		}
+	
+		/* Ẩn tên mục trong sidebar */
+		.sidebar-text {
+		    display: none; /* Ẩn tên mục */
+		    margin-left: 10px;
+		    font-size: 16px;
+		}
+	
+		/* Khi rê chuột vào sidebar, mở rộng và hiển thị tên mục */
+		.sidebar:hover {
+		    width: 200px; /* Kích thước sidebar khi rê chuột vào */
+		}
+	
+		.sidebar:hover .sidebar-text {
+		    display: inline; /* Hiển thị tên mục khi rê chuột */
+		}
+		.stat-box {
+	         border: 1px solid #ddd;
+	         border-radius: 8px;
+	         padding: 20px;
+	         text-align: center;
+	         margin-bottom: 20px;
+	     }
+	     .stat-title {
+	         font-weight: bold;
+	         margin-bottom: 10px;
+	     }
+	     .stat-value {
+	         font-size: 1.5rem;
+	         color: #007bff;
+	     }
+
+	      .sidebar h2 {
+	          font-size: 24px;
+	          color: #f8f9fa;
+	          margin-bottom: 30px;
+	          text-align: center;
+	      }
+	
+	      .sidebar ul {
+	          list-style-type: none;
+	          padding: 0;
+	      }
+	
+	      .sidebar ul li {
+	          padding: 10px 15px;
+	          border-radius: 4px;
+	          margin-bottom: 5px;
+	          cursor: pointer;
+	      }
+	
+	      .sidebar ul li:hover {
+	          background-color: #495057;
+	      }
+	
+	      .sidebar a {
+	          text-decoration: none;
+	          color: white;
+	          display: block;
+	      }
+	
+		.main-content {
+		    margin-left: 60px; /* Thay đổi để phù hợp với kích thước sidebar khi ẩn */
+		    padding: 20px;
+		    width: calc(100% - 60px); /* Cập nhật lại chiều rộng cho nội dung chính */
+		    transition: margin-left 0.3s ease; /* Thêm hiệu ứng mượt mà khi sidebar thay đổi kích thước */
+		}
+	
+	
+	      footer {
+	          background-color: #343a40;
+	          color: white;
+	          padding: 10px;
+	          text-align: center;
+	          position: fixed;
+	          width: 100%;
+	          bottom: 0;
+	      }
+	
+	      .nav-tabs .nav-link.active {
+	          background-color: #343a40;
+	          color: white;
+	      }
+		canvas {
+		    max-height: 400px;
+		}
+		/* CSS để hiển thị nút hamburger và đặt nó ở góc trên bên trái */
+		.toggle-sidebar {
+		    display: none; /* Ẩn mặc định */
+		    position: fixed;
+		    top: 10px;
+		    left: 10px;
+		    background-color: transparent;
+		    border: none;
+		    font-size: 30px;
+		    color: black;
+		    z-index: 1000;
+		}
+		/* Lớp ẩn sidebar */
+		.sidebar.hide {
+		    display: none;
+		}
+	
+		/* Lớp hiển thị sidebar */
+		.sidebar.show {
+		    display: block;
+		}
+	
+		.verified-icon, .unverified-icon {
+		    display: inline-flex;
+		    justify-content: center;
+		    align-items: center;
+		    width: 25px;
+		    height: 25px;
+		    border-radius: 50%;
+		    font-size: 18px;
+		    font-weight: bold;
+		}
+
+		.verified-icon {
+		    background-color: blue;
+		    color: white;
+		    position: relative;
+		    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.unverified-icon {
+		    background-color: red;
+		    color: white;
+		    position: relative;
+		    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		i {
+		    font-size: 20px;
+		}
+		/* Thêm vào cuối CSS */
+		@media (max-width: 768px) {
+		    /* Sidebar ẩn khi màn hình nhỏ */
+		    .sidebar {
+		        display: none;  /* Ẩn sidebar trên màn hình nhỏ */
+		        position: absolute;
+		        width: 100%;
+		        height: auto;
+		        padding: 10px;
+		        background-color: #343a40;
+		    }
+			.toggle-sidebar {
+			     display: block; /* Hiển thị nút khi màn hình nhỏ */
+			 }
+	
+		    /* Mở rộng nội dung chính khi sidebar ẩn */
+		    .main-content {
+		        margin-left: 0;
+		        padding: 10px;
+		        width: 100%;
+		    }
+	
+		    /* Điều chỉnh các tiêu đề và văn bản cho phù hợp */
+		    .card-header h3, .card-body h2 {
+		        font-size: 18px;
+		    }
+	
+		    .nav-tabs .nav-link {
+		        font-size: 14px;
+		    }
+	
+		    /* Điều chỉnh biểu đồ cho phù hợp với chiều rộng */
+		    canvas {
+		        width: 100% !important;
+		        max-width: 100% !important;
+		    }
+	
+		    /* Điều chỉnh bảng */
+		    .table-responsive {
+		        margin-bottom: 20px;
+		    }
+		}
+    </style>
+</head>
+<body>
+	<button class="toggle-sidebar" id="toggleSidebar">
+		    <i class="fas fa-bars"></i> <!-- Biểu tượng Menu -->
+		</button>
+
+		<!-- Sidebar -->
+		<div class="sidebar">
+		    <h2><span class="sidebar-text">Admin Panel</span></h2>
+		    <ul>
+		        <li class="nav-item" th:if="${session.loggedInUser != null}">
+		            <a class="nav-link" href="/profile" id="userDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+		           		<span class="sidebar-text">  Xin chào,   [[${session.loggedInUser}]]! </span> <br> 
+		            </a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/index"><i class="fas fa-home"></i><span class="sidebar-text">Sushi Wa</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/admin"><i class="fas fa-tachometer-alt"></i><span class="sidebar-text">Dashboard</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/admin/products"><i class="fas fa-box"></i><span class="sidebar-text">Products</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/admin/orders"><i class="fas fa-shopping-cart"></i><span class="sidebar-text">Orders</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/admin/customers"><i class="fas fa-users"></i><span class="sidebar-text">Customers</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/admin/promotions"><i class="fas fa-tags"></i><span class="sidebar-text">Promotions</span></a>
+		        </li>
+		        <li class="sidebar-item">
+		            <a href="/logout"><i class="fas fa-sign-out-alt"></i><span class="sidebar-text">Logout</span></a>
+		        </li>
+		    </ul>
+		</div>
+	<div class="main-content">
+    <div class="container mt-5">
+        <h1 class="mb-4">Quản lý khách hàng</h1>
+		<div class="mb-3">
+		   
+
+		</div>
+
+        <!-- Hiển thị thông báo lỗi -->
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Hiển thị thông báo thành công -->
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+		<div class="d-flex justify-content-between mb-3">
+		    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">Thêm khách hàng</button>
+		    <button class="btn btn-outline-danger" id="downloadExcel">Tải xuống Excel</button>
+		</div>
+
+		<div class="table-container">
+		    <table class="table table-striped">
+		        <thead>
+		            <tr>
+						<th title="Mã ID của người dùng">ID</th>
+			            <th title="Tên người dùng">Name</th>
+			            <th title="Tên đăng nhập của người dùng">Username</th>
+			            <th title="Số điện thoại của người dùng">Phone</th>
+			            <th title="Địa chỉ email của người dùng">Email</th>
+			            <th title="Vai trò của người dùng">Role</th>
+			            <th title="Điểm của người dùng">Points</th>
+			            <th title="Trạng thái của người dùng">Status</th>
+			            <th title="Đăng nhập lại">reLogin</th>
+			            <th title="Ngày tạo tài khoản của người dùng">CreatedAt</th>
+		                <th title="Tổng chi tiêu">totalSpending</th>
+		                <th title="Hành động" >Act</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <tr th:each="user : ${users}">
+		                <td th:text="${user.customerId}"></td>
+		                <td th:text="${user.name}"></td>
+		                <td th:text="${user.username}"></td>
+		                <td th:text="${user.phone}"></td>
+		                <td th:text="${user.email}"></td>
+		                <td th:text="${user.role}"></td>
+		                <td th:text="${user.points}"></td>
+		                <td>
+		                    <div th:class="${user.isEmailVerified ? 'verified-icon' : 'unverified-icon'}">
+		                        <i th:class="${user.isEmailVerified ? 'fas fa-check' : 'fas fa-times'}"
+		                           style="color: white; font-size: 20px;"
+		                           th:title="${user.isEmailVerified ? 'Đã xác thực' : 'Chưa xác thực'}"></i>
+		                    </div>
+		                </td>
+		                <!-- Thêm cột Buộc đăng nhập lại -->
+		                <td>
+		                    <div th:class="${user.isForceRelogin ? 'force-relogin-icon' : 'normal-login-icon'}">
+		                        <i th:class="${user.isForceRelogin ? 'fas fa-exclamation-circle text-danger' : 'fas fa-check text-success'}"
+		                           th:title="${user.isForceRelogin ? 'Buộc đăng nhập lại' : 'Bình thường'}"
+		                           style="font-size: 20px;"></i>
+		                    </div>
+		                </td>
+						<td th:text="${user.formattedCreatedAt}"></td>
+		                <td th:text="${user.formattedTotalSpending}"></td>
+		                <td>
+		                    <button class="btn btn-warning btn-sm mb-2" data-bs-toggle="modal"
+		                            th:data-bs-target="'#editCustomerModal-' + ${user.username}">
+								<i class="fas fa-pencil-alt"></i>
+		                    </button>
+		                    <a th:href="@{'/admin/customers/delete/' + ${user.username}}" 
+		                       class="btn btn-danger btn-sm mb-2"
+		                       onclick="return confirm('Tất cả dữ liệu liên quan đến người dùng này đều bị xóa. Bạn có chắc muốn xóa?')"><i class="fas fa-trash-alt"></i></a>
+		                    <a title="Xem chi tiết" th:href="@{'/admin/customers/details/' + ${user.secureToken}}" class="btn btn-info btn-sm">
+								<i class="fas fa-info-circle"></i>
+		                    </a>
+		                </td>
+		            </tr>
+		        </tbody>
+		    </table>
+		</div>
+		</div>
+    </div>
+
+    <!-- Modal Thêm khách hàng -->
+    <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCustomerModalLabel">Thêm khách hàng mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/admin/customers/add}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" id="address" name="address">
+                        </div>
+                        <div class="mb-3">
+                            <label for="points" class="form-label">Điểm</label>
+                            <input type="number" class="form-control" id="points" name="points" value="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="passwordHash" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="passwordHash" name="passwordHash" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Vai trò</label>
+                            <select id="role" class="form-control" name="role" required>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm khách hàng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Sửa khách hàng -->
+    <div th:each="user : ${users}" th:id="'editCustomerModal-' + ${user.username}" class="modal fade" tabindex="-1" aria-labelledby="editCustomerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCustomerModalLabel">Sửa khách hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{'/admin/customers/edit/' + ${user.username}}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="name" name="name" th:value="${user.name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phone" name="phone" th:value="${user.phone}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Vai trò</label>
+                            <select id="role" class="form-control" name="role">
+                                <option value="user" th:selected="${user.role == 'user'}">User</option>
+                                <option value="admin" th:selected="${user.role == 'admin'}">Admin</option>
+                            </select>
+                        </div>
+						<div class="mb-3">
+						    <label class="form-label" for="isEmailVerified">Trạng thái xác thực Email</label>
+						    <select class="form-select" id="isEmailVerified" name="isEmailVerified">
+						        <option value="true" th:selected="${user.isEmailVerified}">Đã xác thực</option>
+						        <option value="false" th:selected="${!user.isEmailVerified}">Chưa xác thực</option>
+						    </select>
+						</div>
+                        <div class="mb-3">
+                            <label for="points" class="form-label">Điểm</label>
+                            <input type="number" class="form-control" id="points" name="points" th:value="${user.points}" required>
+                        </div>
+						<div class="mb-3">
+						    <label class="form-label" for="isAccountLocked">Trạng thái khóa tài khoản</label>
+						    <select class="form-select" id="isAccountLocked" name="isAccountLocked">
+						        <option value="true" th:selected="${user.isAccountLocked}">Bị khóa</option>
+						        <option value="false" th:selected="${!user.isAccountLocked}">Hoạt động</option>
+						    </select>
+						</div>
+						<div class="mb-3">
+	                          <label class="form-label" for="forceRelogin">Buộc đăng nhập lại</label>
+	                          <select class="form-select" id="forceRelogin" name="forceRelogin">
+	                              <option value="true" th:selected="${user.forceRelogin}">Có</option>
+	                              <option value="false" th:selected="${!user.forceRelogin}">Không</option>
+	                          </select>
+	                      </div>
+                    </div>
+					
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+	<script>
+		document.getElementById('downloadExcel').addEventListener('click', function() {
+		    var table = document.querySelector('table');
+		    var workbook = XLSX.utils.table_to_book(table, {sheet: 'Khách hàng'});
+
+		    // Tạo file Excel và tải xuống
+		    XLSX.writeFile(workbook, 'khach_hang.xlsx');
+		});
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử sử dụng Voucher</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Lịch sử sử dụng Voucher</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Người dùng</th>
+					<th>Họ tên</th>
+                    <th>Số lần sử dụng</th>
+					<th>Ngày sử dụng</th>
+                    <th>Đơn hàng</th>
+                    <th>Mã đơn hàng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usage : ${usageHistory}">
+                    <td th:text="${usage.user.username}"></td>
+					<td th:text="${usage.user.name}"></td>
+                    <td th:text="${usage.usageCount}"></td>
+					<td th:text="${usage.order != null ? usage.order.getFormattedOrderDate() : 'N/A'}"></td>
+                    <td th:text="${usage.order != null ? usage.order.orderId : 'Không có'}"></td>
+                    <td th:text="${usage.order != null ? usage.orderCode : 'Không có'}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
